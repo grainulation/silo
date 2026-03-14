@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>silo — Reusable knowledge packs for research sprints</title>
 <meta name="description" content="Pull pre-built constraint sets, risk libraries, and architecture patterns into your wheat sprints. Share knowledge across teams.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="silo — Reusable knowledge packs for research sprints">
+<meta property="og:description" content="Pull pre-built constraint sets, risk libraries, and architecture patterns into your wheat sprints. Share knowledge across teams.">
+<meta property="og:url" content="https://grainulator.github.io/silo/">
+<link rel="canonical" href="https://grainulator.github.io/silo/">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2309090b'/><text x='32' y='48' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='800' font-size='44' fill='%233b82f6'>s</text></svg>">
 <style>
 :root {
@@ -132,7 +137,7 @@ footer a{color:var(--text-2)}
       <a href="#quickstart">Quick Start</a>
       <a href="#example">Example</a>
       <a href="#features">Features</a>
-      <a href="https://github.com/aid-ninja/silo" class="nav-cta">GitHub</a>
+      <a href="https://github.com/grainulator/silo" class="nav-cta">GitHub</a>
     </div>
   </div>
 </nav>
@@ -160,8 +165,8 @@ footer a{color:var(--text-2)}
         <h3>List available packs</h3>
         <p>See what knowledge packs are available -- compliance, migration, architecture, and more.</p>
         <div class="copy-wrap">
-          <div class="qs-code"><span class="dim">$</span> silo packs</div>
-          <button class="copy-btn" onclick="copyText(this,'silo packs')">Copy</button>
+          <div class="qs-code"><span class="dim">$</span> npx @grainulator/silo packs</div>
+          <button class="copy-btn" onclick="copyText(this,'npx @grainulator/silo packs')">Copy</button>
         </div>
       </div>
       <div class="qs-step rv rv-d2">
@@ -169,8 +174,8 @@ footer a{color:var(--text-2)}
         <h3>Pull into your sprint</h3>
         <p>Import a pack's claims directly into your claims.json. They merge cleanly with existing claims.</p>
         <div class="copy-wrap">
-          <div class="qs-code"><span class="dim">$</span> silo pull compliance --into ./claims.json</div>
-          <button class="copy-btn" onclick="copyText(this,'silo pull compliance --into ./claims.json')">Copy</button>
+          <div class="qs-code"><span class="dim">$</span> npx @grainulator/silo pull compliance --into ./claims.json</div>
+          <button class="copy-btn" onclick="copyText(this,'npx @grainulator/silo pull compliance --into ./claims.json')">Copy</button>
         </div>
       </div>
       <div class="qs-step rv rv-d3">
@@ -178,8 +183,8 @@ footer a{color:var(--text-2)}
         <h3>Search stored knowledge</h3>
         <p>Search across all packs and stored findings. Find relevant claims without re-researching.</p>
         <div class="copy-wrap">
-          <div class="qs-code"><span class="dim">$</span> silo search "encryption at rest"</div>
-          <button class="copy-btn" onclick="copyText(this,'silo search &quot;encryption at rest&quot;')">Copy</button>
+          <div class="qs-code"><span class="dim">$</span> npx @grainulator/silo search "encryption at rest"</div>
+          <button class="copy-btn" onclick="copyText(this,'npx @grainulator/silo search &quot;encryption at rest&quot;')">Copy</button>
         </div>
       </div>
     </div>
@@ -195,7 +200,7 @@ footer a{color:var(--text-2)}
     <p class="section-sub rv rv-d2">Your team is researching a patient data feature. Instead of starting from scratch, pull the compliance pack.</p>
 
     <div class="term-block rv rv-d3">
-<span class="prompt">$</span> <span class="cmd">silo packs</span>
+<span class="prompt">$</span> <span class="cmd">npx @grainulator/silo packs</span>
 
 <span class="output">  Pack            Claims  Types              Tier</span>
 <span class="output">  -------------------------------------------------------</span>
@@ -203,14 +208,14 @@ footer a{color:var(--text-2)}
 <span class="output">  migration       <span class="num">10</span>      risk + constraint  mixed</span>
 <span class="output">  architecture    <span class="num">12</span>      all types          mixed</span>
 
-<span class="prompt">$</span> <span class="cmd">silo pull compliance --into ./claims.json</span>
+<span class="prompt">$</span> <span class="cmd">npx @grainulator/silo pull compliance --into ./claims.json</span>
 
 <span class="success">Pulled 14 claims into ./claims.json</span>
 <span class="output">  Added: 6 HIPAA constraints, 4 SOC 2 constraints, 4 GDPR constraints</span>
 <span class="output">  All claims are type "constraint" with tier "documented"</span>
 <span class="output">  Sources: HHS.gov, AICPA TSC, GDPR Article references</span>
 
-<span class="prompt">$</span> <span class="cmd">silo search "encryption at rest"</span>
+<span class="prompt">$</span> <span class="cmd">npx @grainulator/silo search "encryption at rest"</span>
 
 <span class="output">  Found <span class="num">3</span> matches:</span>
 <span class="output">  <span class="hl">compliance/hipaa-07</span> PHI must be encrypted at rest (AES-256 or equivalent)</span>
@@ -283,19 +288,19 @@ footer a{color:var(--text-2)}
     <h2 class="section-title rv rv-d1">The knowledge layer</h2>
     <p class="section-sub rv rv-d2" style="margin-left:auto;margin-right:auto">Wheat creates claims. Silo stores and shares them across sprints and teams.</p>
     <div class="eco-grid rv rv-d3">
-      <a href="https://github.com/aid-ninja/wheat" class="eco-chip"><span class="eco-dot" style="background:#fbbf24"></span>wheat -- research sprints</a>
-      <a href="https://github.com/aid-ninja/farmer" class="eco-chip"><span class="eco-dot" style="background:#22c55e"></span>farmer -- permission dashboard</a>
-      <a href="https://github.com/aid-ninja/grove" class="eco-chip"><span class="eco-dot" style="background:#10b981"></span>grove -- shared tools</a>
-      <a href="https://github.com/aid-ninja/mill" class="eco-chip"><span class="eco-dot" style="background:#d97706"></span>mill -- export &amp; publish</a>
-      <a href="https://github.com/aid-ninja/harvest" class="eco-chip"><span class="eco-dot" style="background:#f97316"></span>harvest -- analytics</a>
-      <a href="https://github.com/aid-ninja/field" class="eco-chip"><span class="eco-dot" style="background:#a16207"></span>field -- orchestration</a>
+      <a href="https://grainulator.github.io/wheat/" class="eco-chip"><span class="eco-dot" style="background:#fbbf24"></span>wheat -- research sprints</a>
+      <a href="https://grainulator.github.io/farmer/" class="eco-chip"><span class="eco-dot" style="background:#22c55e"></span>farmer -- permission dashboard</a>
+      <a href="https://grainulator.github.io/grove/" class="eco-chip"><span class="eco-dot" style="background:#10b981"></span>grove -- shared tools</a>
+      <a href="https://grainulator.github.io/mill/" class="eco-chip"><span class="eco-dot" style="background:#d97706"></span>mill -- export &amp; publish</a>
+      <a href="https://grainulator.github.io/harvest/" class="eco-chip"><span class="eco-dot" style="background:#f97316"></span>harvest -- analytics</a>
+      <a href="https://grainulator.github.io/field/" class="eco-chip"><span class="eco-dot" style="background:#a16207"></span>field -- orchestration</a>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="container">
-    <p>silo &middot; MIT License &middot; <a href="https://github.com/aid-ninja/silo">GitHub</a> &middot; <a href="https://github.com/aid-ninja/silo#readme">Docs</a></p>
+    <p>silo &middot; MIT License &middot; <a href="https://github.com/grainulator/silo">GitHub</a> &middot; <a href="https://github.com/grainulator/silo#readme">Docs</a></p>
   </div>
 </footer>
 
