@@ -1,0 +1,77 @@
+{
+  "name": "Migration Research Templates",
+  "description": "Common research patterns for technology migrations -- database migrations, cloud migrations, language/framework migrations. Seed claims capture recurring risks and constraints.",
+  "version": "1.0.0",
+  "claims": [
+    {
+      "id": "mig-001",
+      "type": "constraint",
+      "tier": "documented",
+      "text": "Production migrations must be reversible. Every schema change, data transform, or infrastructure swap needs a tested rollback procedure with a maximum rollback time SLA.",
+      "tags": ["migration", "rollback", "safety"]
+    },
+    {
+      "id": "mig-002",
+      "type": "risk",
+      "tier": "documented",
+      "text": "Dual-write periods introduce data consistency risks. During cutover, writes must go to both old and new systems, and a reconciliation process must detect drift.",
+      "tags": ["migration", "dual-write", "consistency"]
+    },
+    {
+      "id": "mig-003",
+      "type": "risk",
+      "tier": "documented",
+      "text": "Data migrations that run longer than the maintenance window force a choice between extended downtime and incremental migration. Estimate data volume transfer rates early.",
+      "tags": ["migration", "downtime", "planning"]
+    },
+    {
+      "id": "mig-004",
+      "type": "constraint",
+      "tier": "stated",
+      "text": "Feature parity with the legacy system is rarely achievable on day one. Define a 'minimum viable migration' scope that covers the critical path and defer edge cases.",
+      "tags": ["migration", "scope", "mvp"]
+    },
+    {
+      "id": "mig-005",
+      "type": "recommendation",
+      "tier": "documented",
+      "text": "Use the strangler fig pattern for large migrations: route traffic incrementally to the new system while the old system continues to serve unmodified paths.",
+      "tags": ["migration", "strangler-fig", "pattern"]
+    },
+    {
+      "id": "mig-006",
+      "type": "risk",
+      "tier": "documented",
+      "text": "Character encoding mismatches (UTF-8 vs Latin-1, collation differences) are the most common silent data corruption source in database migrations. Test with production-representative data.",
+      "tags": ["migration", "database", "encoding"]
+    },
+    {
+      "id": "mig-007",
+      "type": "estimate",
+      "tier": "web",
+      "text": "Cloud-to-cloud migrations typically take 2-4x longer than initial estimates due to undocumented dependencies, permission differences, and networking surprises.",
+      "tags": ["migration", "cloud", "estimation"]
+    },
+    {
+      "id": "mig-008",
+      "type": "constraint",
+      "tier": "documented",
+      "text": "API contract changes during migration require versioned endpoints. Clients must be able to continue using the old API for a deprecation period (minimum 3 months is standard).",
+      "tags": ["migration", "api", "versioning"]
+    },
+    {
+      "id": "mig-009",
+      "type": "recommendation",
+      "tier": "documented",
+      "text": "Run shadow traffic (replay production reads against the new system without serving responses) for at least 2 weeks before cutover. Compare results for correctness and latency.",
+      "tags": ["migration", "shadow-traffic", "validation"]
+    },
+    {
+      "id": "mig-010",
+      "type": "risk",
+      "tier": "stated",
+      "text": "Team knowledge of the legacy system degrades over time. If migration stalls, institutional knowledge may be lost before it completes. Document as you migrate, not after.",
+      "tags": ["migration", "knowledge", "documentation"]
+    }
+  ]
+}

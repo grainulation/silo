@@ -1,0 +1,34 @@
+{
+  "name": "@grainulator/silo",
+  "version": "0.1.0",
+  "description": "Reusable knowledge for research sprints -- shared claim libraries, templates, and knowledge packs",
+  "main": "lib/store.js",
+  "bin": {
+    "silo": "bin/silo.js"
+  },
+  "scripts": {
+    "test": "node test/basic.test.js"
+  },
+  "keywords": [
+    "research",
+    "claims",
+    "knowledge",
+    "templates",
+    "sprint"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grainulator/silo.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "packs/",
+    "README.md",
+    "LICENSE"
+  ]
+}
