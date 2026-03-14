@@ -236,6 +236,8 @@ function copyText(b, t) {
   window.addEventListener('scroll', onScroll, { passive: true });
 
   termObs.observe(timeline);
+  /* Fallback: if IntersectionObserver doesn't fire (e.g. in iframes), show after 2s */
+  setTimeout(function() { if (!animated) { animated = true; showFinalState(); } }, 2000);
 })();
 </script>
 </body>
