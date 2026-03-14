@@ -36,14 +36,14 @@
 <section class="what-is" id="what"><div class="container"><div class="what-box rv"><h2>What is silo?</h2><p>When you use wheat (a structured research framework) to make technical decisions, you collect findings called "claims." Silo lets you save the best claims from past sprints as reusable "packs" -- like a library of pre-verified knowledge. Next time someone on your team starts a sprint about compliance, they can pull the compliance pack and start with 14 documented constraints instead of a blank slate. Think of it as a knowledge base that speaks the same language as your research tool.</p></div></div></section>
 <hr class="sep">
 <section class="quickstart" id="quickstart"><div class="container"><div class="qs-label rv">Quick start -- 3 commands</div><div class="qs-steps">
-  <div class="qs-step rv rv-d1"><div class="qs-num">1</code></pre><h3>List available packs</h3><p>See what knowledge packs are available -- compliance, migration, architecture, and more.</p><div class="copy-wrap"><pre class="qs-code"><code><span class="dim">$</span> silo packs</div><button class="copy-btn" onclick="copyText(this,'silo packs')">Copy</button></div><div class="qs-output">Pack            Claims  Types
+  <div class="qs-step rv rv-d1"><div class="qs-num">1</code></pre><h3>List available packs</h3><p>See what knowledge packs are available -- compliance, migration, architecture, and more.</p><div class="copy-wrap"><pre class="qs-code"><code><span class="dim">$</span> npx @grainulator/silo packs</div><button class="copy-btn" onclick="copyText(this,'npx @grainulator/silo packs')">Copy</button></div><div class="qs-output">Pack            Claims  Types
 compliance      14      constraint
 migration       10      risk + constraint
 architecture    12      all types</div></div>
-  <div class="qs-step rv rv-d2"><div class="qs-num">2</code></pre><h3>Pull into your sprint</h3><p>Import a pack's claims into your claims.json. They merge cleanly with existing claims.</p><div class="copy-wrap"><pre class="qs-code"><code><span class="dim">$</span> silo pull compliance --into ./claims.json</div><button class="copy-btn" onclick="copyText(this,'silo pull compliance --into ./claims.json')">Copy</button></div><div class="qs-output">Pulled 14 claims into ./claims.json
+  <div class="qs-step rv rv-d2"><div class="qs-num">2</code></pre><h3>Pull into your sprint</h3><p>Import a pack's claims into your claims.json. They merge cleanly with existing claims.</p><div class="copy-wrap"><pre class="qs-code"><code><span class="dim">$</span> npx @grainulator/silo pull compliance --into ./claims.json</div><button class="copy-btn" onclick="copyText(this,'npx @grainulator/silo pull compliance --into ./claims.json')">Copy</button></div><div class="qs-output">Pulled 14 claims into ./claims.json
   Added: 6 HIPAA, 4 SOC 2, 4 GDPR
   All type "constraint", tier "documented"</div></div>
-  <div class="qs-step rv rv-d3"><div class="qs-num">3</code></pre><h3>Search stored knowledge</h3><p>Search across all packs. Find relevant claims without knowing which pack they are in.</p><div class="copy-wrap"><pre class="qs-code"><code><span class="dim">$</span> silo search "encryption at rest"</div><button class="copy-btn" onclick="copyText(this,'silo search &quot;encryption at rest&quot;')">Copy</button></div><div class="qs-output">Found 3 matches:
+  <div class="qs-step rv rv-d3"><div class="qs-num">3</code></pre><h3>Search stored knowledge</h3><p>Search across all packs. Find relevant claims without knowing which pack they are in.</p><div class="copy-wrap"><pre class="qs-code"><code><span class="dim">$</span> npx @grainulator/silo search "encryption at rest"</div><button class="copy-btn" onclick="copyText(this,'npx @grainulator/silo search &quot;encryption at rest&quot;')">Copy</button></div><div class="qs-output">Found 3 matches:
   compliance/hipaa-07 -- PHI encrypted (AES-256)
   compliance/soc2-03  -- CC6.1 criteria
   architecture/a09    -- <2% latency for SSDs</div></div>
@@ -59,14 +59,14 @@ architecture    12      all types</div></div>
     <div class="pack-card"><h4>architecture</h4><div class="pack-meta">12 claims -- all types -- mixed</div><p>Architecture patterns, performance baselines, and scalability heuristics.</p></div>
   </div>
   <div class="term-block rv rv-d4" style="margin-top:24px">
-<span class="prompt">$</span> <span class="cmd">silo pull compliance --into ./claims.json</span>
+<span class="prompt">$</span> <span class="cmd">npx @grainulator/silo pull compliance --into ./claims.json</span>
 
 <span class="success">Pulled 14 claims into ./claims.json</span>
 <span class="output">  Added: 6 HIPAA constraints, 4 SOC 2 constraints, 4 GDPR constraints</span>
 <span class="output">  All claims are type "constraint" with tier "documented"</span>
 <span class="output">  Sources: HHS.gov, AICPA TSC, GDPR Article references</span>
 
-<span class="prompt">$</span> <span class="cmd">silo search "encryption at rest"</span>
+<span class="prompt">$</span> <span class="cmd">npx @grainulator/silo search "encryption at rest"</span>
 
 <span class="output">  Found <span class="num">3</span> matches:</span>
 <span class="output">  <span class="hl">compliance/hipaa-07</span> PHI must be encrypted at rest (AES-256 or equivalent)</span>
