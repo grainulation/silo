@@ -1,297 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Silo — Reusable Knowledge for Research Sprints</title>
-  <style>
-    :root {
-      --bg: #0a0e17;
-      --surface: #111827;
-      --border: #1e293b;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --accent: #3b82f6;
-      --accent-glow: rgba(59, 130, 246, 0.15);
-      --code-bg: #0d1117;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>silo — Reusable knowledge packs for research sprints</title>
+<meta name="description" content="Pull pre-built constraint sets, risk libraries, and architecture patterns into your wheat sprints. Share knowledge across teams.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2309090b'/><text x='32' y='48' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='800' font-size='44' fill='%233b82f6'>s</text></svg>">
+<style>
+:root {
+  --bg: #09090b;
+  --bg-2: #111113;
+  --surface: rgba(255,255,255,0.03);
+  --surface-hover: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.07);
+  --border-light: rgba(255,255,255,0.12);
+  --accent: #3b82f6;
+  --accent-dim: rgba(59,130,246,0.12);
+  --accent-glow: rgba(59,130,246,0.06);
+  --green: #34d399;
+  --purple: #a78bfa;
+  --text: #e8ecf1;
+  --text-2: #9ba5b7;
+  --text-3: #5a6478;
+  --mono: 'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;
+  --sans: -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --max-w: 1080px;
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code,pre{font-family:var(--mono)}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+.bg-ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-ambient .orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.04;animation:drift 28s ease-in-out infinite alternate}
+.bg-ambient .orb:nth-child(1){width:600px;height:600px;background:var(--accent);top:-10%;left:25%}
+.bg-ambient .orb:nth-child(2){width:400px;height:400px;background:var(--purple);bottom:10%;right:0;animation-delay:-12s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,-15px) scale(1.03)}100%{transform:translate(-12px,10px) scale(.97)}}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      min-height: 100vh;
-    }
+.page{position:relative;z-index:2}
+.container{max-width:var(--max-w);margin:0 auto;padding:0 24px}
 
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
+.rv{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.rv.vis{opacity:1;transform:none}
+.rv-d1{transition-delay:.08s}.rv-d2{transition-delay:.16s}.rv-d3{transition-delay:.24s}.rv-d4{transition-delay:.32s}
+.hf{opacity:0;transform:translateY(16px);animation:hIn .65s var(--ease) forwards}
+.hf1{animation-delay:.05s}.hf2{animation-delay:.15s}.hf3{animation-delay:.25s}.hf4{animation-delay:.4s}
+@keyframes hIn{to{opacity:1;transform:none}}
 
-    header {
-      padding: 80px 0 48px;
-      text-align: center;
-    }
+nav{position:sticky;top:0;z-index:100;background:rgba(9,9,11,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 0}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-weight:700;font-size:1.1rem;letter-spacing:-.02em;display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:24px;font-size:.875rem;color:var(--text-2);align-items:center}
+.nav-links a{color:var(--text-2);transition:color .2s}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.nav-cta{background:var(--accent);color:#fff;padding:6px 16px;border-radius:6px;font-weight:600;font-size:.8125rem;transition:opacity .2s}
+.nav-cta:hover{opacity:.85;text-decoration:none}
 
-    .logo {
-      font-size: 48px;
-      margin-bottom: 8px;
-    }
+.hero{padding:100px 0 80px;text-align:center}
+.hero-badge{display:inline-block;padding:5px 14px;border:1px solid var(--border-light);border-radius:100px;font-size:.75rem;color:var(--text-2);margin-bottom:24px;letter-spacing:.04em;text-transform:uppercase}
+.hero h1{font-size:clamp(2.4rem,5.5vw,3.8rem);font-weight:800;letter-spacing:-.035em;line-height:1.1;margin-bottom:20px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.hero-sub{font-size:clamp(1.05rem,2vw,1.25rem);color:var(--text-2);max-width:560px;margin:0 auto 40px;line-height:1.55}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:10px;font-weight:600;font-size:.9375rem;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{opacity:.88;text-decoration:none;transform:translateY(-1px)}
+.btn-ghost{border:1px solid var(--border-light);color:var(--text)}.btn-ghost:hover{background:var(--surface-hover);text-decoration:none;transform:translateY(-1px)}
 
-    h1 {
-      font-size: 40px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 16px;
-    }
+.section-label{font-size:.8125rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:12px;font-weight:600}
+.section-title{font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:800;letter-spacing:-.03em;margin-bottom:16px;line-height:1.15}
+.section-sub{color:var(--text-2);font-size:1.05rem;max-width:620px;margin-bottom:48px;line-height:1.55}
 
-    h1 span {
-      color: var(--accent);
-    }
+.quickstart{padding:80px 0 60px}
+.qs-label{text-align:center;font-size:.8125rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:40px;font-weight:600}
+.qs-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.qs-step{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px 28px}
+.qs-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--accent-dim);color:var(--accent);font-weight:700;font-size:.875rem;margin-bottom:16px}
+.qs-step h3{font-size:1.05rem;font-weight:700;margin-bottom:8px}
+.qs-step p{color:var(--text-2);font-size:.875rem;line-height:1.55;margin-bottom:16px}
+.qs-code{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.8125rem;overflow-x:auto;white-space:pre;position:relative;line-height:1.6;color:var(--green)}
+.qs-code .dim{color:var(--text-3)}
+@media(max-width:720px){.qs-steps{grid-template-columns:1fr}}
 
-    .tagline {
-      font-size: 20px;
-      color: var(--muted);
-      max-width: 480px;
-      margin: 0 auto 32px;
-    }
+.example{padding:80px 0}
+.term-block{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:24px;font-family:var(--mono);font-size:.8125rem;line-height:1.8;overflow-x:auto}
+.term-block .prompt{color:var(--text-3)}
+.term-block .cmd{color:var(--accent)}
+.term-block .output{color:var(--text-2)}
+.term-block .hl{color:var(--accent)}
+.term-block .success{color:var(--green)}
+.term-block .num{color:var(--accent)}
 
-    .hero-cmd {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 24px;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 15px;
-      color: var(--accent);
-      display: inline-block;
-      margin-bottom: 8px;
-    }
+.features{padding:80px 0}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 24px;transition:border-color .2s}
+.feature-card:hover{border-color:rgba(59,130,246,.25)}
+.feature-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:18px;background:var(--accent-dim);color:var(--accent)}
+.feature-card h3{font-size:.9375rem;font-weight:700;margin-bottom:6px}
+.feature-card p{font-size:.8125rem;color:var(--text-2);line-height:1.6}
 
-    .hero-cmd .prefix {
-      color: var(--muted);
-    }
+.ecosystem{padding:80px 0}
+.eco-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.eco-chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:.8125rem;color:var(--text-2);transition:border-color .2s}
+.eco-chip:hover{border-color:var(--accent);text-decoration:none;color:var(--text)}
+.eco-chip .eco-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
-    .section {
-      padding: 48px 0;
-      border-top: 1px solid var(--border);
-    }
+footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;font-size:.8125rem;color:var(--text-3)}
+footer a{color:var(--text-2)}
+.sep{border:none;border-top:1px solid var(--border);margin:0}
+.copy-wrap{position:relative}
+.copy-btn{position:absolute;top:8px;right:8px;background:var(--surface-hover);border:1px solid var(--border);color:var(--text-3);border-radius:6px;padding:4px 10px;font-size:.7rem;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.copy-btn:hover{color:var(--text);border-color:var(--border-light)}
+.copy-btn.copied{color:var(--accent);border-color:var(--accent)}
 
-    h2 {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 24px;
-      color: var(--text);
-    }
-
-    .pack-grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .pack-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 24px;
-      transition: border-color 0.2s;
-    }
-
-    .pack-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 24px var(--accent-glow);
-    }
-
-    .pack-card h3 {
-      font-size: 18px;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    .pack-card p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-
-    .pack-meta {
-      display: flex;
-      gap: 16px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .pack-meta .count {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .features {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .feature {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    .feature h3 {
-      font-size: 15px;
-      margin-bottom: 6px;
-    }
-
-    .feature p {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    pre {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
-      overflow-x: auto;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--muted);
-    }
-
-    pre .cmd { color: var(--accent); }
-    pre .comment { color: #475569; }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 0;
-      text-align: center;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 600px) {
-      header { padding: 48px 0 32px; }
-      h1 { font-size: 28px; }
-      .tagline { font-size: 16px; }
-      .features { grid-template-columns: 1fr; }
-      .hero-cmd { font-size: 13px; padding: 12px 16px; }
-    }
-  </style>
+@media(max-width:600px){.nav-links a:not(.nav-cta){display:none}.hero{padding:80px 0 60px}}
+</style>
 </head>
 <body>
+
+<div class="bg-ambient"><div class="orb"></div><div class="orb"></div></div>
+
+<div class="page">
+
+<nav>
   <div class="container">
-    <header>
-      <div class="logo">&#x1F9CA;</div>
-      <h1><span>silo</span></h1>
-      <p class="tagline">Reusable knowledge for research sprints. Grab a starter pack in one command.</p>
-      <div class="hero-cmd">
-        <span class="prefix">$</span> npx @grainulator/silo pull compliance --into ./claims.json
-      </div>
-    </header>
-
-    <div class="section">
-      <h2>Built-in Knowledge Packs</h2>
-      <div class="pack-grid">
-        <div class="pack-card">
-          <h3>compliance</h3>
-          <p>HIPAA, SOC 2, and GDPR constraint sets with regulatory citations. Drop into any compliance-sensitive research sprint.</p>
-          <div class="pack-meta">
-            <span><span class="count">14</span> claims</span>
-            <span>constraint type</span>
-            <span>documented tier</span>
-          </div>
-        </div>
-        <div class="pack-card">
-          <h3>migration</h3>
-          <p>Battle-tested risks and patterns for database, cloud, and framework migrations. Strangler fig, dual-write, shadow traffic, and more.</p>
-          <div class="pack-meta">
-            <span><span class="count">10</span> claims</span>
-            <span>risk + constraint</span>
-            <span>mixed tiers</span>
-          </div>
-        </div>
-        <div class="pack-card">
-          <h3>architecture</h3>
-          <p>Decision claims for monolith vs microservices, build vs buy, SQL vs NoSQL, caching, rate limiting, and circuit breakers.</p>
-          <div class="pack-meta">
-            <span><span class="count">12</span> claims</span>
-            <span>all types</span>
-            <span>mixed tiers</span>
-          </div>
-        </div>
-      </div>
+    <a href="#" class="nav-logo"><span>s</span> silo</a>
+    <div class="nav-links">
+      <a href="#quickstart">Quick Start</a>
+      <a href="#example">Example</a>
+      <a href="#features">Features</a>
+      <a href="https://github.com/aid-ninja/silo" class="nav-cta">GitHub</a>
     </div>
-
-    <div class="section">
-      <h2>What Silo Does</h2>
-      <div class="features">
-        <div class="feature">
-          <h3>Shared Claim Libraries</h3>
-          <p>Reusable constraint sets that encode hard-won knowledge. HIPAA rules, migration risks, architecture trade-offs.</p>
-        </div>
-        <div class="feature">
-          <h3>Sprint Templates</h3>
-          <p>Pre-built research questions with seeded claims. Start a migration sprint with known risks already loaded.</p>
-        </div>
-        <div class="feature">
-          <h3>Import / Export</h3>
-          <p>Pull claims from any pack into your sprint. Push your findings back for the next team to use.</p>
-        </div>
-        <div class="feature">
-          <h3>Knowledge Packs</h3>
-          <p>Version-controlled bundles. Publish packs from your best sprints. Install packs from your team.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>Quick Start</h2>
-      <pre><span class="comment"># See what's available</span>
-<span class="cmd">silo packs</span>
-
-<span class="comment"># Pull compliance constraints into your sprint</span>
-<span class="cmd">silo pull compliance --into ./claims.json</span>
-
-<span class="comment"># Search across all stored knowledge</span>
-<span class="cmd">silo search "encryption at rest"</span>
-
-<span class="comment"># Store your findings for reuse</span>
-<span class="cmd">silo store "q4-findings" --from ./claims.json</span></pre>
-    </div>
-
-    <div class="section">
-      <h2>Design Principles</h2>
-      <div class="features">
-        <div class="feature">
-          <h3>Zero Dependencies</h3>
-          <p>Node.js built-ins only. No database, no network calls, no accounts. Works offline, works forever.</p>
-        </div>
-        <div class="feature">
-          <h3>Filesystem Storage</h3>
-          <p>Everything is JSON files in ~/.silo. Inspect, back up, version control, or delete with standard tools.</p>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      <p>MIT License &middot; <a href="https://github.com/grainulator/silo">GitHub</a> &middot; Part of <a href="https://github.com/grainulator">grainulator</a></p>
-    </footer>
   </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge hf hf1">Part of the grainulator ecosystem</div>
+    <h1 class="hf hf2">Reusable knowledge packs<br><em>for research sprints</em></h1>
+    <p class="hero-sub hf hf3">For teams who keep researching the same things. Pull pre-built constraint sets, risk libraries, and architecture patterns into any sprint in one command.</p>
+    <div class="hero-actions hf hf4">
+      <a href="#quickstart" class="btn btn-primary">Get started</a>
+      <a href="#example" class="btn btn-ghost">See it in action</a>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<section class="quickstart" id="quickstart">
+  <div class="container">
+    <div class="qs-label rv">How to use silo</div>
+    <div class="qs-steps">
+      <div class="qs-step rv rv-d1">
+        <div class="qs-num">1</div>
+        <h3>List available packs</h3>
+        <p>See what knowledge packs are available -- compliance, migration, architecture, and more.</p>
+        <div class="copy-wrap">
+          <div class="qs-code"><span class="dim">$</span> silo packs</div>
+          <button class="copy-btn" onclick="copyText(this,'silo packs')">Copy</button>
+        </div>
+      </div>
+      <div class="qs-step rv rv-d2">
+        <div class="qs-num">2</div>
+        <h3>Pull into your sprint</h3>
+        <p>Import a pack's claims directly into your claims.json. They merge cleanly with existing claims.</p>
+        <div class="copy-wrap">
+          <div class="qs-code"><span class="dim">$</span> silo pull compliance --into ./claims.json</div>
+          <button class="copy-btn" onclick="copyText(this,'silo pull compliance --into ./claims.json')">Copy</button>
+        </div>
+      </div>
+      <div class="qs-step rv rv-d3">
+        <div class="qs-num">3</div>
+        <h3>Search stored knowledge</h3>
+        <p>Search across all packs and stored findings. Find relevant claims without re-researching.</p>
+        <div class="copy-wrap">
+          <div class="qs-code"><span class="dim">$</span> silo search "encryption at rest"</div>
+          <button class="copy-btn" onclick="copyText(this,'silo search &quot;encryption at rest&quot;')">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<section class="example" id="example">
+  <div class="container">
+    <div class="section-label rv">Real example</div>
+    <h2 class="section-title rv rv-d1">Pulling HIPAA constraints into a healthcare sprint</h2>
+    <p class="section-sub rv rv-d2">Your team is researching a patient data feature. Instead of starting from scratch, pull the compliance pack.</p>
+
+    <div class="term-block rv rv-d3">
+<span class="prompt">$</span> <span class="cmd">silo packs</span>
+
+<span class="output">  Pack            Claims  Types              Tier</span>
+<span class="output">  -------------------------------------------------------</span>
+<span class="output">  compliance      <span class="num">14</span>      constraint         documented</span>
+<span class="output">  migration       <span class="num">10</span>      risk + constraint  mixed</span>
+<span class="output">  architecture    <span class="num">12</span>      all types          mixed</span>
+
+<span class="prompt">$</span> <span class="cmd">silo pull compliance --into ./claims.json</span>
+
+<span class="success">Pulled 14 claims into ./claims.json</span>
+<span class="output">  Added: 6 HIPAA constraints, 4 SOC 2 constraints, 4 GDPR constraints</span>
+<span class="output">  All claims are type "constraint" with tier "documented"</span>
+<span class="output">  Sources: HHS.gov, AICPA TSC, GDPR Article references</span>
+
+<span class="prompt">$</span> <span class="cmd">silo search "encryption at rest"</span>
+
+<span class="output">  Found <span class="num">3</span> matches:</span>
+<span class="output">  <span class="hl">compliance/hipaa-07</span> PHI must be encrypted at rest (AES-256 or equivalent)</span>
+<span class="output">  <span class="hl">compliance/soc2-03</span>  Data at rest must use encryption meeting CC6.1 criteria</span>
+<span class="output">  <span class="hl">architecture/a09</span>   Transparent encryption adds &lt;2% latency for SSDs</span>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-label rv">Key features</div>
+    <h2 class="section-title rv rv-d1">Stop researching the same things</h2>
+    <p class="section-sub rv rv-d2">Knowledge you can reuse, version, and share across teams.</p>
+
+    <div class="features-grid">
+      <div class="feature-card rv rv-d1">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        </div>
+        <h3>Knowledge Packs</h3>
+        <p>Version-controlled bundles of claims. Compliance, migration risks, architecture patterns -- all pre-researched.</p>
+      </div>
+      <div class="feature-card rv rv-d2">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18m-9-9h18"/></svg>
+        </div>
+        <h3>Clean Merge</h3>
+        <p>Pull claims into any sprint. IDs are namespaced so they never conflict with your existing research.</p>
+      </div>
+      <div class="feature-card rv rv-d3">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h3>Full-Text Search</h3>
+        <p>Search across all stored knowledge. Find relevant claims without knowing which pack they are in.</p>
+      </div>
+      <div class="feature-card rv rv-d4">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <h3>Team Sharing</h3>
+        <p>Store your best sprint findings as reusable packs. Next team gets a head start, not a blank slate.</p>
+      </div>
+      <div class="feature-card rv">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M12 8v8m-4-4h8"/></svg>
+        </div>
+        <h3>Filesystem Storage</h3>
+        <p>Everything is JSON files in ~/.silo. Inspect, back up, or version control with standard tools.</p>
+      </div>
+      <div class="feature-card rv">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3>Zero Dependencies</h3>
+        <p>Node built-ins only. No database, no network calls, no accounts. Works offline forever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<section class="ecosystem">
+  <div class="container" style="text-align:center">
+    <div class="section-label rv">Part of grainulator</div>
+    <h2 class="section-title rv rv-d1">The knowledge layer</h2>
+    <p class="section-sub rv rv-d2" style="margin-left:auto;margin-right:auto">Wheat creates claims. Silo stores and shares them across sprints and teams.</p>
+    <div class="eco-grid rv rv-d3">
+      <a href="https://github.com/aid-ninja/wheat" class="eco-chip"><span class="eco-dot" style="background:#fbbf24"></span>wheat -- research sprints</a>
+      <a href="https://github.com/aid-ninja/farmer" class="eco-chip"><span class="eco-dot" style="background:#22c55e"></span>farmer -- permission dashboard</a>
+      <a href="https://github.com/aid-ninja/grove" class="eco-chip"><span class="eco-dot" style="background:#10b981"></span>grove -- shared tools</a>
+      <a href="https://github.com/aid-ninja/mill" class="eco-chip"><span class="eco-dot" style="background:#d97706"></span>mill -- export &amp; publish</a>
+      <a href="https://github.com/aid-ninja/harvest" class="eco-chip"><span class="eco-dot" style="background:#f97316"></span>harvest -- analytics</a>
+      <a href="https://github.com/aid-ninja/field" class="eco-chip"><span class="eco-dot" style="background:#a16207"></span>field -- orchestration</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>silo &middot; MIT License &middot; <a href="https://github.com/aid-ninja/silo">GitHub</a> &middot; <a href="https://github.com/aid-ninja/silo#readme">Docs</a></p>
+  </div>
+</footer>
+
+</div>
+
+<script>
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }});
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+</script>
 </body>
 </html>
