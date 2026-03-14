@@ -44,8 +44,8 @@ describe('Store', () => {
 
   it('stores and retrieves claims', () => {
     const claims = [
-      { id: 'c001', type: 'constraint', text: 'Must use TLS 1.2+', tags: ['security'] },
-      { id: 'c002', type: 'risk', text: 'Latency may spike under load', tags: ['performance'] },
+      { id: 'c001', type: 'constraint', content: 'Must use TLS 1.2+', tags: ['security'] },
+      { id: 'c002', type: 'risk', content: 'Latency may spike under load', tags: ['performance'] },
     ];
     const entry = store.storeClaims('test-claims', claims);
     assert.equal(entry.id, 'test-claims');
@@ -54,7 +54,7 @@ describe('Store', () => {
     const retrieved = store.getClaims('test-claims');
     assert.ok(retrieved);
     assert.equal(retrieved.claims.length, 2);
-    assert.equal(retrieved.claims[0].text, 'Must use TLS 1.2+');
+    assert.equal(retrieved.claims[0].content, 'Must use TLS 1.2+');
   });
 
   it('lists stored collections', () => {
@@ -64,7 +64,7 @@ describe('Store', () => {
   });
 
   it('removes a collection', () => {
-    store.storeClaims('to-remove', [{ id: 'x', text: 'temp' }]);
+    store.storeClaims('to-remove', [{ id: 'x', content: 'temp' }]);
     assert.ok(store.getClaims('to-remove'));
     store.remove('to-remove');
     assert.equal(store.getClaims('to-remove'), null);
@@ -76,9 +76,9 @@ describe('Search', () => {
   before(() => {
     store = new Store(path.join(TEST_DIR, 'silo-search')).init();
     store.storeClaims('security-pack', [
-      { id: 's001', type: 'constraint', tier: 'documented', text: 'All data must be encrypted at rest', tags: ['encryption'] },
-      { id: 's002', type: 'risk', tier: 'web', text: 'TLS certificate rotation may cause downtime', tags: ['tls'] },
-      { id: 's003', type: 'constraint', tier: 'documented', text: 'Passwords must be hashed with bcrypt or argon2', tags: ['auth'] },
+      { id: 's001', type: 'constraint', evidence: 'documented', content: 'All data must be encrypted at rest', tags: ['encryption'] },
+      { id: 's002', type: 'risk', evidence: 'web', content: 'TLS certificate rotation may cause downtime', tags: ['tls'] },
+      { id: 's003', type: 'constraint', evidence: 'documented', content: 'Passwords must be hashed with bcrypt or argon2', tags: ['auth'] },
     ]);
     search = new Search(store);
   });
@@ -86,7 +86,7 @@ describe('Search', () => {
   it('finds claims by text search', () => {
     const results = search.query('encrypted');
     assert.ok(results.length >= 1);
-    assert.ok(results[0].claim.text.includes('encrypted'));
+    assert.ok(results[0].claim.content.includes('encrypted'));
   });
 
   it('filters by type', () => {
@@ -128,10 +128,50 @@ describe('ImportExport', () => {
     assert.equal(first.length, second.length);
   });
 
+  it('normalizes legacy tier/text to evidence/content on pull', () => {
+    // Store claims using legacy field names
+    store.storeClaims('legacy-pack', [
+      { id: 'leg001', type: 'constraint', tier: 'documented', text: 'Legacy claim with old fields', tags: ['test'] },
+    ]);
+    const targetPath = path.join(TEST_DIR, 'target-legacy.json');
+    fs.writeFileSync(targetPath, '[]');
+    io.pull('legacy-pack', targetPath);
+    const claims = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+    assert.ok(claims.length > 0);
+    const claim = claims[0];
+    // Should have wheat-canonical fields
+    assert.equal(claim.evidence, 'documented');
+    assert.equal(claim.content, 'Legacy claim with old fields');
+    // Should NOT have legacy fields
+    assert.equal(claim.tier, undefined);
+    assert.equal(claim.text, undefined);
+    // Should have all required wheat fields
+    assert.ok('source' in claim && typeof claim.source === 'object');
+    assert.ok('status' in claim);
+    assert.ok('phase_added' in claim);
+    assert.ok('timestamp' in claim);
+    assert.ok('conflicts_with' in claim);
+    assert.ok('tags' in claim);
+  });
+
+  it('imported pack claims have wheat-canonical schema', () => {
+    const targetPath = path.join(TEST_DIR, 'target-schema.json');
+    fs.writeFileSync(targetPath, '[]');
+    io.pull('compliance', targetPath);
+    const claims = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+    for (const claim of claims) {
+      assert.ok(claim.content, `claim ${claim.id} missing content`);
+      assert.ok(claim.evidence, `claim ${claim.id} missing evidence`);
+      assert.equal(claim.text, undefined, `claim ${claim.id} still has legacy text`);
+      assert.equal(claim.tier, undefined, `claim ${claim.id} still has legacy tier`);
+      assert.ok(typeof claim.source === 'object', `claim ${claim.id} source should be object`);
+    }
+  });
+
   it('stores claims from a file (push)', () => {
     const sourcePath = path.join(TEST_DIR, 'source.json');
     fs.writeFileSync(sourcePath, JSON.stringify([
-      { id: 'p001', type: 'factual', text: 'Node.js is single-threaded' },
+      { id: 'p001', type: 'factual', content: 'Node.js is single-threaded' },
     ]));
     const entry = io.push(sourcePath, 'node-facts');
     assert.equal(entry.claimCount, 1);
@@ -152,7 +192,7 @@ describe('Templates', () => {
       audience: 'Engineering team',
       constraints: ['Zero downtime', 'No data loss'],
       seedClaims: [
-        { type: 'constraint', text: 'Migration must be reversible' },
+        { type: 'constraint', content: 'Migration must be reversible' },
       ],
       tags: ['database', 'migration'],
     });
@@ -205,7 +245,7 @@ describe('Packs', () => {
     const packFile = path.join(TEST_DIR, 'custom-pack.json');
     fs.writeFileSync(packFile, JSON.stringify({
       name: 'Custom Pack',
-      claims: [{ id: 'x001', text: 'test claim' }],
+      claims: [{ id: 'x001', content: 'test claim' }],
     }));
     const result = packsMgr.install(packFile);
     assert.equal(result.id, 'custom-pack');
