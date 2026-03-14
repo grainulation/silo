@@ -122,7 +122,7 @@ try {
     case 'search': {
       const query = args.slice(1).filter((a) => !a.startsWith('--')).join(' ');
       if (!query) {
-        print('Usage: silo search <query> [--type <type>] [--tier <tier>]');
+        print('Usage: silo search <query> [--type <type>] [--evidence <tier>]');
         process.exit(1);
       }
       const type = flag('type');
@@ -133,7 +133,9 @@ try {
       } else {
         print(`${results.length} result(s):\n`);
         for (const r of results) {
-          print(`  [${r.claim.id}] (${r.claim.type}, ${r.claim.tier}) ${r.claim.text.slice(0, 120)}${r.claim.text.length > 120 ? '...' : ''}`);
+          const text = r.claim.content || r.claim.text || '';
+          const tier = r.claim.evidence || r.claim.tier || 'unknown';
+          print(`  [${r.claim.id}] (${r.claim.type}, ${tier}) ${text.slice(0, 120)}${text.length > 120 ? '...' : ''}`);
           print(`    from: ${r.collection}  score: ${r.score}\n`);
         }
       }

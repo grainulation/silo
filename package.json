@@ -16,6 +16,7 @@
     "templates",
     "sprint"
   ],
+  "author": "grainulator contributors",
   "license": "MIT",
   "repository": {
     "type": "git",
