@@ -1,9 +1,9 @@
-# @grainulator/silo
+# @grainulation/silo
 
 Reusable knowledge for research sprints. Grab a starter pack in one command:
 
 ```bash
-npx @grainulator/silo pull compliance --into ./claims.json
+npx @grainulation/silo pull compliance --into ./claims.json
 ```
 
 ## What is Silo?
@@ -80,9 +80,9 @@ When you `store`, Silo:
 ## Programmatic API
 
 ```js
-const { Store } = require('@grainulator/silo/lib/store');
-const { Search } = require('@grainulator/silo/lib/search');
-const { ImportExport } = require('@grainulator/silo/lib/import-export');
+const { Store } = require('@grainulation/silo/lib/store');
+const { Search } = require('@grainulation/silo/lib/search');
+const { ImportExport } = require('@grainulation/silo/lib/import-export');
 
 const store = new Store().init();
 const search = new Search(store);

@@ -1,5 +1,5 @@
 {
-  "name": "@grainulator/silo",
+  "name": "@grainulation/silo",
   "version": "0.1.0",
   "description": "Reusable knowledge for research sprints -- shared claim libraries, templates, and knowledge packs",
   "main": "lib/store.js",
@@ -16,11 +16,11 @@
     "templates",
     "sprint"
   ],
-  "author": "grainulator contributors",
+  "author": "grainulation contributors",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/grainulator/silo.git"
+    "url": "https://github.com/grainulation/silo.git"
   },
   "engines": {
     "node": ">=18.0.0"
