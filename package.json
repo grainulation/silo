@@ -29,6 +29,7 @@
     "bin/",
     "lib/",
     "packs/",
+    "public/",
     "README.md",
     "LICENSE"
   ]

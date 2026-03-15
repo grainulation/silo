@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" data-tool="silo">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>silo -- knowledge browser</title>
+<style>
+/* ── grainulation tokens (inline, zero deps) ── */
+:root {
+  --bg: #0a0e1a; --bg2: #111827; --bg3: #1e293b; --bg4: #334155;
+  --fg: #e2e8f0; --fg2: #94a3b8; --fg3: #64748b;
+  --border: #1e293b; --border-subtle: rgba(255,255,255,0.08);
+  --green: #34d399; --red: #f87171; --blue: #60a5fa;
+  --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
+  --font-mono: 'SF Mono','Cascadia Code','JetBrains Mono','Fira Code',monospace;
+  --radius: 8px; --radius-sm: 4px; --radius-lg: 12px;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 12px; --space-lg: 16px; --space-xl: 24px;
+  --transition-fast: 0.1s ease; --transition-base: 0.15s ease;
+  /* silo accent: emerald */
+  --accent: #6ee7b7; --accent-light: #a7f3d0; --accent-dim: rgba(110,231,183,0.10); --accent-border: rgba(110,231,183,0.25);
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font-sans); background: var(--bg); color: var(--fg);
+  font-size: 13px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+/* ── layout ── */
+.app { display: flex; height: 100vh; }
+.sidebar {
+  width: 320px; min-width: 280px; background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.main { flex: 1; overflow-y: auto; padding: var(--space-xl); }
+
+/* ── header ── */
+.header {
+  padding: var(--space-lg); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.header h1 { font-size: 15px; font-weight: 600; }
+.header .tool-badge {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 2px 6px; border-radius: var(--radius-sm);
+  background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border);
+}
+.conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-left: auto; flex-shrink: 0; }
+.conn-dot.disconnected { background: var(--red); }
+
+/* ── search ── */
+.search-box { padding: var(--space-md); border-bottom: 1px solid var(--border); }
+.search-box input {
+  width: 100%; padding: 8px 12px; border-radius: var(--radius);
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--fg); font-size: 12px; font-family: var(--font-sans);
+  outline: none; transition: border var(--transition-fast);
+}
+.search-box input:focus { border-color: var(--accent-border); }
+.search-box input::placeholder { color: var(--fg3); }
+
+/* ── pack list ── */
+.pack-list { flex: 1; overflow-y: auto; padding: var(--space-sm); }
+.pack-card {
+  padding: var(--space-md); margin-bottom: var(--space-sm);
+  border-radius: var(--radius); background: var(--bg);
+  border: 1px solid var(--border); cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.pack-card:hover { border-color: var(--accent-border); background: var(--bg3); }
+.pack-card.active { border-color: var(--accent); background: var(--accent-dim); }
+.pack-card .pack-name { font-size: 13px; font-weight: 600; color: var(--fg); }
+.pack-card .pack-meta {
+  font-size: 10px; color: var(--fg3); margin-top: 4px;
+  display: flex; gap: var(--space-sm); align-items: center;
+}
+.pack-card .pack-meta .badge {
+  padding: 1px 5px; border-radius: var(--radius-sm);
+  background: var(--bg3); font-size: 9px;
+}
+.pack-card .pack-desc { font-size: 11px; color: var(--fg2); margin-top: 6px; }
+
+/* ── main panels ── */
+.panel { margin-bottom: var(--space-xl); }
+.panel-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--fg3); margin-bottom: var(--space-md);
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.panel-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── pack detail ── */
+.pack-detail-header {
+  padding: var(--space-lg); background: var(--bg2); border-radius: var(--radius-lg);
+  border: 1px solid var(--border); margin-bottom: var(--space-xl);
+}
+.pack-detail-header h2 { font-size: 18px; font-weight: 600; }
+.pack-detail-header .desc { color: var(--fg2); margin-top: var(--space-sm); font-size: 12px; }
+.pack-detail-header .stats {
+  display: flex; gap: var(--space-xl); margin-top: var(--space-lg);
+}
+.stat { text-align: center; }
+.stat .stat-val { font-size: 22px; font-weight: 700; color: var(--accent); }
+.stat .stat-label { font-size: 10px; color: var(--fg3); text-transform: uppercase; letter-spacing: 0.3px; }
+
+/* ── claim table ── */
+.claim-table { width: 100%; border-collapse: collapse; }
+.claim-table th {
+  text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px;
+  color: var(--fg3); padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+.claim-table td {
+  padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--border-subtle);
+  font-size: 12px; vertical-align: top;
+}
+.claim-table tr:hover td { background: var(--accent-dim); }
+.type-badge {
+  display: inline-block; padding: 1px 6px; border-radius: var(--radius-sm);
+  font-size: 10px; font-weight: 500;
+}
+.type-badge.constraint { background: rgba(248,113,113,0.15); color: #f87171; }
+.type-badge.risk { background: rgba(251,146,60,0.15); color: #fb923c; }
+.type-badge.recommendation { background: rgba(96,165,250,0.15); color: #60a5fa; }
+.type-badge.factual { background: rgba(52,211,153,0.15); color: #34d399; }
+.type-badge.estimate { background: rgba(167,139,250,0.15); color: #a78bfa; }
+.type-badge.feedback { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.evidence-badge {
+  display: inline-block; padding: 1px 6px; border-radius: var(--radius-sm);
+  font-size: 10px; background: var(--bg3); color: var(--fg2);
+}
+.tag { display: inline-block; padding: 1px 5px; font-size: 9px; border-radius: var(--radius-sm); background: var(--bg4); color: var(--fg3); margin-right: 3px; }
+
+/* ── import wizard ── */
+.import-wizard {
+  padding: var(--space-lg); background: var(--bg2); border-radius: var(--radius-lg);
+  border: 1px solid var(--accent-border); margin-bottom: var(--space-xl);
+}
+.import-wizard h3 { font-size: 14px; margin-bottom: var(--space-md); }
+.import-wizard input {
+  width: 100%; padding: 8px 12px; border-radius: var(--radius);
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--fg); font-size: 12px; font-family: var(--font-mono);
+  outline: none; margin-bottom: var(--space-md);
+}
+.import-wizard input:focus { border-color: var(--accent-border); }
+.import-btn {
+  padding: 8px 16px; border-radius: var(--radius);
+  background: var(--accent-dim); color: var(--accent);
+  border: 1px solid var(--accent-border); cursor: pointer;
+  font-size: 12px; font-weight: 500; transition: background var(--transition-fast);
+}
+.import-btn:hover { background: var(--accent-border); }
+.import-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.import-result { margin-top: var(--space-md); font-size: 12px; color: var(--fg2); }
+.import-result.success { color: var(--green); }
+.import-result.error { color: var(--red); }
+
+/* ── search results ── */
+.search-results { padding: var(--space-md); }
+.search-result-item {
+  padding: var(--space-md); margin-bottom: var(--space-sm);
+  border-radius: var(--radius); background: var(--bg2);
+  border: 1px solid var(--border);
+}
+.search-result-item .sr-header {
+  display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 4px;
+}
+.search-result-item .sr-collection { font-size: 10px; color: var(--fg3); }
+.search-result-item .sr-content { font-size: 12px; color: var(--fg); }
+.search-result-item .sr-score { font-size: 9px; color: var(--fg3); margin-left: auto; }
+
+/* ── empty state ── */
+.empty-state {
+  text-align: center; padding: 60px var(--space-xl);
+  color: var(--fg3);
+}
+.empty-state h2 { font-size: 16px; color: var(--fg2); margin-bottom: var(--space-md); }
+.empty-state p { font-size: 12px; max-width: 400px; margin: 0 auto; }
+
+/* ── responsive ── */
+@media (max-width: 768px) {
+  .app { flex-direction: column; }
+  .sidebar { width: 100%; min-width: unset; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border); }
+  .main { padding: var(--space-lg); }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- sidebar -->
+  <aside class="sidebar">
+    <div class="header">
+      <h1>silo</h1>
+      <span class="tool-badge">knowledge</span>
+      <span class="conn-dot" id="connDot"></span>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search claims across all packs..." />
+    </div>
+    <div class="pack-list" id="packList"></div>
+  </aside>
+
+  <!-- main content -->
+  <main class="main" id="mainContent">
+    <div class="empty-state" id="emptyState">
+      <h2>Knowledge Browser</h2>
+      <p>Select a pack from the sidebar to browse its claims, or use the search bar to find specific knowledge across all packs.</p>
+    </div>
+  </main>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const API = '';
+  let allPacks = [];
+  let activePack = null;
+  let searchTimeout = null;
+
+  // ── SSE ──
+  function connectSSE() {
+    const dot = document.getElementById('connDot');
+    const es = new EventSource(API + '/events');
+    es.onopen = () => { dot.classList.remove('disconnected'); };
+    es.onerror = () => { dot.classList.add('disconnected'); };
+    es.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === 'state') {
+          loadPacks();
+        }
+      } catch {}
+    };
+  }
+
+  // ── Load packs ──
+  async function loadPacks() {
+    try {
+      const res = await fetch(API + '/api/packs');
+      const data = await res.json();
+      allPacks = data.packs || [];
+      renderPackList(allPacks);
+    } catch (err) {
+      console.error('Failed to load packs:', err);
+    }
+  }
+
+  // ── Render pack list ──
+  function renderPackList(packs) {
+    const list = document.getElementById('packList');
+    if (packs.length === 0) {
+      list.innerHTML = '<div style="padding:16px;color:var(--fg3);font-size:12px;">No packs found.</div>';
+      return;
+    }
+    list.innerHTML = packs.map(p => `
+      <div class="pack-card${activePack === p.id ? ' active' : ''}" data-pack="${p.id}">
+        <div class="pack-name">${esc(p.name || p.id)}</div>
+        <div class="pack-meta">
+          <span class="badge">${p.claimCount} claims</span>
+          <span class="badge">v${esc(p.version || '1.0.0')}</span>
+          <span class="badge">${esc(p.source || 'unknown')}</span>
+        </div>
+        ${p.description ? `<div class="pack-desc">${esc(truncate(p.description, 120))}</div>` : ''}
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.pack-card').forEach(card => {
+      card.addEventListener('click', () => selectPack(card.dataset.pack));
+    });
+  }
+
+  // ── Select a pack ──
+  async function selectPack(id) {
+    activePack = id;
+    renderPackList(allPacks);
+
+    const main = document.getElementById('mainContent');
+    main.innerHTML = '<div style="padding:40px;color:var(--fg3);">Loading...</div>';
+
+    try {
+      const res = await fetch(API + '/api/packs/' + encodeURIComponent(id));
+      const pack = await res.json();
+      renderPackDetail(pack);
+    } catch (err) {
+      main.innerHTML = `<div style="padding:40px;color:var(--red);">Error loading pack: ${esc(err.message)}</div>`;
+    }
+  }
+
+  // ── Render pack detail ──
+  function renderPackDetail(pack) {
+    const main = document.getElementById('mainContent');
+    const claims = pack.claims || [];
+
+    // Count types and evidence tiers
+    const types = countBy(claims, 'type');
+    const evidence = countBy(claims, 'evidence');
+
+    main.innerHTML = `
+      <div class="pack-detail-header">
+        <h2>${esc(pack.name || pack.id)}</h2>
+        ${pack.description ? `<div class="desc">${esc(pack.description)}</div>` : ''}
+        <div class="stats">
+          <div class="stat"><div class="stat-val">${claims.length}</div><div class="stat-label">Claims</div></div>
+          <div class="stat"><div class="stat-val">${Object.keys(types).length}</div><div class="stat-label">Types</div></div>
+          <div class="stat"><div class="stat-val">${Object.keys(evidence).length}</div><div class="stat-label">Evidence Tiers</div></div>
+          <div class="stat"><div class="stat-val">v${esc(pack.version || '1.0.0')}</div><div class="stat-label">Version</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Import into Sprint</div>
+        <div class="import-wizard">
+          <h3>Import "${esc(pack.name || pack.id)}" into a sprint</h3>
+          <input type="text" id="importTarget" placeholder="/path/to/sprint-directory" />
+          <button class="import-btn" id="importBtn">Import ${claims.length} claims</button>
+          <div class="import-result" id="importResult"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Claims (${claims.length})</div>
+        <table class="claim-table">
+          <thead><tr>
+            <th>ID</th><th>Type</th><th>Topic</th><th>Content</th><th>Evidence</th><th>Tags</th>
+          </tr></thead>
+          <tbody>
+            ${claims.map(c => `<tr>
+              <td style="font-family:var(--font-mono);font-size:10px;white-space:nowrap;">${esc(c.id || '-')}</td>
+              <td><span class="type-badge ${esc(c.type || '')}">${esc(c.type || '-')}</span></td>
+              <td style="color:var(--fg2);font-size:11px;">${esc(c.topic || '-')}</td>
+              <td>${esc(truncate(c.content || c.text || '', 200))}</td>
+              <td><span class="evidence-badge">${esc(c.evidence || c.tier || '-')}</span></td>
+              <td>${(c.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // Import handler
+    document.getElementById('importBtn').addEventListener('click', async () => {
+      const target = document.getElementById('importTarget').value.trim();
+      const resultEl = document.getElementById('importResult');
+      if (!target) {
+        resultEl.className = 'import-result error';
+        resultEl.textContent = 'Please enter a target sprint directory.';
+        return;
+      }
+      const btn = document.getElementById('importBtn');
+      btn.disabled = true;
+      btn.textContent = 'Importing...';
+      try {
+        const res = await fetch(API + '/api/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pack: pack.id, targetDir: target }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          resultEl.className = 'import-result success';
+          resultEl.textContent = `Imported ${data.imported} claims (${data.skippedDuplicates} duplicates skipped, ${data.totalClaims} total).`;
+        } else {
+          resultEl.className = 'import-result error';
+          resultEl.textContent = data.error || 'Import failed.';
+        }
+      } catch (err) {
+        resultEl.className = 'import-result error';
+        resultEl.textContent = err.message;
+      }
+      btn.disabled = false;
+      btn.textContent = `Import ${claims.length} claims`;
+    });
+  }
+
+  // ── Search ──
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    const q = searchInput.value.trim();
+    if (!q) {
+      if (activePack) selectPack(activePack);
+      else showEmpty();
+      return;
+    }
+    searchTimeout = setTimeout(() => doSearch(q), 250);
+  });
+
+  async function doSearch(q) {
+    try {
+      const res = await fetch(API + '/api/search?q=' + encodeURIComponent(q));
+      const data = await res.json();
+      renderSearchResults(data.query, data.results);
+    } catch (err) {
+      console.error('Search failed:', err);
+    }
+  }
+
+  function renderSearchResults(query, results) {
+    const main = document.getElementById('mainContent');
+    if (results.length === 0) {
+      main.innerHTML = `
+        <div class="empty-state">
+          <h2>No results</h2>
+          <p>No claims matched "${esc(query)}". Try different search terms.</p>
+        </div>`;
+      return;
+    }
+
+    main.innerHTML = `
+      <div class="panel">
+        <div class="panel-title">Search results for "${esc(query)}" (${results.length})</div>
+        <div class="search-results">
+          ${results.map(r => `
+            <div class="search-result-item">
+              <div class="sr-header">
+                <span class="type-badge ${esc(r.claim.type || '')}">${esc(r.claim.type || '-')}</span>
+                <span class="evidence-badge">${esc(r.claim.evidence || r.claim.tier || '-')}</span>
+                <span class="sr-collection">${esc(r.collection)}</span>
+                <span class="sr-score">score: ${r.score.toFixed(1)}</span>
+              </div>
+              <div class="sr-content">${esc(r.claim.content || r.claim.text || '')}</div>
+              ${r.claim.tags && r.claim.tags.length ? `<div style="margin-top:4px;">${r.claim.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  function showEmpty() {
+    activePack = null;
+    renderPackList(allPacks);
+    document.getElementById('mainContent').innerHTML = document.getElementById('emptyState')
+      ? '<div class="empty-state"><h2>Knowledge Browser</h2><p>Select a pack from the sidebar to browse its claims, or use the search bar to find specific knowledge across all packs.</p></div>'
+      : '';
+  }
+
+  // ── Helpers ──
+  function esc(s) { const d = document.createElement('div'); d.textContent = String(s || ''); return d.innerHTML; }
+  function truncate(s, n) { return s && s.length > n ? s.slice(0, n - 3) + '...' : s || ''; }
+  function countBy(arr, key) { const c = {}; for (const i of arr) { const v = i[key] || 'unknown'; c[v] = (c[v] || 0) + 1; } return c; }
+
+  // ── Init ──
+  connectSSE();
+  loadPacks();
+})();
+</script>
+</body>
+</html>

@@ -11,6 +11,7 @@
  *   silo publish <name> --collections <ids...>  Bundle collections into a pack
  *   silo packs                         List available knowledge packs
  *   silo templates                     List available sprint templates
+ *   silo serve [--port 9095]           Start the knowledge browser UI
  */
 
 const { Store } = require('../lib/store.js');
@@ -65,11 +66,13 @@ Commands:
   packs                             List available knowledge packs
   templates                         List available sprint templates
   install <file>                    Install a pack from a file
+  serve [--port 9095]               Start the knowledge browser UI
 
 Examples:
   silo pull compliance --into ./claims.json
   silo search "encryption" --type constraint
   silo store "my-findings" --from ./claims.json
+  silo serve --port 9095
   silo packs`);
 }
 
@@ -190,6 +193,33 @@ try {
       }
       const result = packs.install(filePath);
       print(`Installed pack "${result.id}" (${result.claimCount} claims)`);
+      break;
+    }
+
+    case 'serve': {
+      // Dynamic import for ESM server module
+      const port = flag('port') || '9095';
+      const root = flag('root') || process.cwd();
+      // Set args for the server module to pick up
+      const serverArgs = ['serve'];
+      if (flag('port')) { serverArgs.push('--port', port); }
+      if (flag('root')) { serverArgs.push('--root', root); }
+      // Re-exec as ESM since server.js uses import
+      const { execFile } = require('node:child_process');
+      const path = require('node:path');
+      const serverPath = path.join(__dirname, '..', 'lib', 'server.js');
+      const child = execFile('node', [serverPath, ...serverArgs.slice(1)], {
+        stdio: 'inherit',
+        env: process.env,
+      });
+      child.stdout && child.stdout.pipe(process.stdout);
+      child.stderr && child.stderr.pipe(process.stderr);
+      child.on('error', (err) => {
+        process.stderr.write(`Error starting server: ${err.message}\n`);
+        process.exit(1);
+      });
+      // Keep the process alive
+      child.on('exit', (code) => process.exit(code || 0));
       break;
     }
 
