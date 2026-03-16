@@ -1,8 +1,13 @@
 {
   "name": "@grainulation/silo",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Reusable knowledge for research sprints -- shared claim libraries, templates, and knowledge packs",
-  "main": "lib/store.js",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./server": "./lib/server.js",
+    "./tokens": "./public/grainulation-tokens.css"
+  },
   "bin": {
     "silo": "bin/silo.js"
   },

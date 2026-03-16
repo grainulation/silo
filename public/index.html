@@ -192,6 +192,7 @@ body {
 /* ── A11y ── */
 .skip-link{position:absolute;top:-40px;inset-inline-start:0;background:var(--accent);color:#000;padding:8px 16px;z-index:10000;font-size:14px;font-weight:600;transition:top .2s}
 .skip-link:focus{top:0}
+*:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
@@ -213,9 +214,9 @@ body {
   <!-- sidebar -->
   <aside class="sidebar" aria-label="Sidebar">
     <header class="header" role="banner">
-      <h1><svg width="51" height="44" viewBox="0 0 54 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle"><path d="M22,8 L16,8 C10.5,12.5 10.5,25.5 16,30 L22,30" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><text x="22" y="19" text-anchor="middle" dominant-baseline="central" fill="#60a5fa" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="800">S</text><text x="27.5" y="19" dominant-baseline="central" fill="#e8ecf1" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="800">ilo</text></svg></h1>
+      <h1><svg width="51" height="44" viewBox="0 0 54 38" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="vertical-align:middle"><path d="M22,8 L16,8 C10.5,12.5 10.5,25.5 16,30 L22,30" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><text x="22" y="19" text-anchor="middle" dominant-baseline="central" fill="#60a5fa" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="800">S</text><text x="27.5" y="19" dominant-baseline="central" fill="#e8ecf1" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="800">ilo</text></svg></h1>
       <span class="tool-badge">knowledge</span>
-      <span class="conn-dot" id="connDot"></span>
+      <span class="conn-dot" id="connDot" aria-label="Connection status" role="status"></span>
     </header>
     <div class="search-box">
       <input type="search" id="searchInput" placeholder="Search claims across all packs..." aria-label="Search claims across all packs" />
@@ -230,6 +231,18 @@ body {
       <p>Select a pack from the sidebar to browse its claims, or use the search bar to find specific knowledge across all packs.</p>
     </div>
   </main>
+  <footer style="display:flex;align-items:center;justify-content:space-between;padding:4px 24px;border-top:1px solid var(--border);background:var(--bg2);font-size:9px;color:var(--fg3)">
+    <span>silo v1.0.0 -- @grainulation/silo</span>
+    <div style="display:flex;gap:16px">
+      <a href="http://localhost:9091" style="color:var(--fg3);text-decoration:none">wheat</a>
+      <a href="http://localhost:9093" style="color:var(--fg3);text-decoration:none">barn</a>
+      <a href="http://localhost:9094" style="color:var(--fg3);text-decoration:none">mill</a>
+      <a href="http://localhost:9090" style="color:var(--fg3);text-decoration:none">farmer</a>
+      <a href="http://localhost:9096" style="color:var(--fg3);text-decoration:none">harvest</a>
+      <span style="color:var(--border)">&middot;</span>
+      <a href="https://github.com/grainulation/silo" target="_blank" rel="noopener noreferrer" style="color:var(--fg3);text-decoration:none">github</a>
+    </div>
+  </footer>
 </div>
 
 <script>
@@ -250,7 +263,12 @@ body {
   function showBanner(count) {
     const b = document.getElementById('reconnectBanner');
     if (count > 5) {
-      b.innerHTML = t('Connection lost.') + ' <button onclick="sseRetryCount=0;connectSSE()">' + t('Retry now') + '</button>';
+      b.textContent = '';
+      b.appendChild(document.createTextNode(t('Connection lost.') + ' '));
+      const btn = document.createElement('button');
+      btn.textContent = t('Retry now');
+      btn.addEventListener('click', () => { sseRetryCount = 0; connectSSE(); });
+      b.appendChild(btn);
     } else if (count > 1) {
       b.textContent = t('Reconnecting (attempt {count})...', { count });
     } else {
@@ -508,7 +526,7 @@ body {
   document.addEventListener('keydown', (e) => {
     if (e.key === '[' && !e.target.matches('input,textarea')) { e.preventDefault(); switchSiloPanel(-1); }
     if (e.key === ']' && !e.target.matches('input,textarea')) { e.preventDefault(); switchSiloPanel(1); }
-    if (e.key === 'Escape') { showEmpty(); }
+    if (e.key === 'Escape') { showEmpty(); const ls = document.getElementById('live-status'); if (ls) ls.textContent = 'Selection cleared'; }
   });
 
   // ── Init ──
