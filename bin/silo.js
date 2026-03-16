@@ -20,6 +20,13 @@ const { ImportExport } = require('../lib/import-export.js');
 const { Templates } = require('../lib/templates.js');
 const { Packs } = require('../lib/packs.js');
 
+const verbose = process.argv.includes('--verbose') || process.argv.includes('-v');
+function vlog(...a) {
+  if (!verbose) return;
+  const ts = new Date().toISOString();
+  process.stderr.write(`[${ts}] silo: ${a.join(' ')}\n`);
+}
+
 const store = new Store();
 const search = new Search(store);
 const io = new ImportExport(store);
@@ -28,6 +35,8 @@ const packs = new Packs(store);
 
 const args = process.argv.slice(2);
 const command = args[0];
+
+vlog('startup', `command=${command || '(none)'}`, `cwd=${process.cwd()}`);
 
 function flag(name) {
   const idx = args.indexOf(`--${name}`);
@@ -217,7 +226,7 @@ try {
       child.stdout && child.stdout.pipe(process.stdout);
       child.stderr && child.stderr.pipe(process.stderr);
       child.on('error', (err) => {
-        process.stderr.write(`Error starting server: ${err.message}\n`);
+        process.stderr.write(`silo: error starting server: ${err.message}\n`);
         process.exit(1);
       });
       // Keep the process alive
@@ -233,11 +242,11 @@ try {
       break;
 
     default:
-      print(`Unknown command: ${command}\n`);
+      print(`silo: unknown command: ${command}\n`);
       usage();
       process.exit(1);
   }
 } catch (err) {
-  process.stderr.write(`Error: ${err.message}\n`);
+  process.stderr.write(`silo: ${err.message}\n`);
   process.exit(1);
 }
