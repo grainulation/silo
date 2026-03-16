@@ -12,6 +12,7 @@
  *   silo packs                         List available knowledge packs
  *   silo templates                     List available sprint templates
  *   silo serve [--port 9095]           Start the knowledge browser UI
+ *   silo serve-mcp                     Start the MCP server on stdio
  */
 
 const { Store } = require('../lib/store.js');
@@ -19,6 +20,13 @@ const { Search } = require('../lib/search.js');
 const { ImportExport } = require('../lib/import-export.js');
 const { Templates } = require('../lib/templates.js');
 const { Packs } = require('../lib/packs.js');
+
+// ── --version / -v (before verbose check) ──
+if (process.argv.includes('--version') || (process.argv.includes('-v') && process.argv.length === 3)) {
+  const pkg = require('../package.json');
+  process.stdout.write(pkg.version + '\n');
+  process.exit(0);
+}
 
 const verbose = process.argv.includes('--verbose') || process.argv.includes('-v');
 function vlog(...a) {
@@ -37,6 +45,8 @@ const args = process.argv.slice(2);
 const command = args[0];
 
 vlog('startup', `command=${command || '(none)'}`, `cwd=${process.cwd()}`);
+
+const jsonMode = args.includes('--json');
 
 function flag(name) {
   const idx = args.indexOf(`--${name}`);
@@ -76,6 +86,7 @@ Commands:
   templates                         List available sprint templates
   install <file>                    Install a pack from a file
   serve [--port 9095]               Start the knowledge browser UI
+  serve-mcp                         Start the MCP server on stdio
 
 Examples:
   silo pull compliance --into ./claims.json
@@ -89,6 +100,10 @@ try {
   switch (command) {
     case 'list': {
       const collections = store.list();
+      if (jsonMode) {
+        print(JSON.stringify(collections));
+        break;
+      }
       if (collections.length === 0) {
         print('No stored collections. Use "silo store" to save claims or "silo packs" to see built-in packs.');
       } else {
@@ -142,6 +157,10 @@ try {
       const type = flag('type');
       const tier = flag('tier');
       const results = search.query(query, { type, tier });
+      if (jsonMode) {
+        print(JSON.stringify(results));
+        break;
+      }
       if (results.length === 0) {
         print('No matches found.');
       } else {
@@ -171,6 +190,10 @@ try {
 
     case 'packs': {
       const allPacks = packs.list();
+      if (jsonMode) {
+        print(JSON.stringify(allPacks));
+        break;
+      }
       if (allPacks.length === 0) {
         print('No packs available.');
       } else {
@@ -186,6 +209,10 @@ try {
 
     case 'templates': {
       const allTemplates = templates.list();
+      if (jsonMode) {
+        print(JSON.stringify(allTemplates));
+        break;
+      }
       if (allTemplates.length === 0) {
         print('No templates saved yet. Use the Templates API to create them.');
       } else {
@@ -207,29 +234,30 @@ try {
       break;
     }
 
+    case 'serve-mcp': {
+      const serveMcp = require('../lib/serve-mcp.js');
+      serveMcp.run(process.cwd());
+      break;
+    }
+
     case 'serve': {
-      // Dynamic import for ESM server module
+      // Dynamic import for ESM server module -- use fork() for proper stdio
       const port = flag('port') || '9095';
       const root = flag('root') || process.cwd();
-      // Set args for the server module to pick up
-      const serverArgs = ['serve'];
+      const serverArgs = [];
       if (flag('port')) { serverArgs.push('--port', port); }
       if (flag('root')) { serverArgs.push('--root', root); }
-      // Re-exec as ESM since server.js uses import
-      const { execFile } = require('node:child_process');
+      const { fork } = require('node:child_process');
       const path = require('node:path');
       const serverPath = path.join(__dirname, '..', 'lib', 'server.js');
-      const child = execFile('node', [serverPath, ...serverArgs.slice(1)], {
+      const child = fork(serverPath, serverArgs, {
         stdio: 'inherit',
         env: process.env,
       });
-      child.stdout && child.stdout.pipe(process.stdout);
-      child.stderr && child.stderr.pipe(process.stderr);
       child.on('error', (err) => {
         process.stderr.write(`silo: error starting server: ${err.message}\n`);
         process.exit(1);
       });
-      // Keep the process alive
       child.on('exit', (code) => process.exit(code || 0));
       break;
     }

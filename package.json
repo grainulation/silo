@@ -5,14 +5,18 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./server": "./lib/server.js",
+    "./server": {
+      "import": "./lib/server.js"
+    },
     "./tokens": "./public/grainulation-tokens.css"
   },
   "bin": {
     "silo": "bin/silo.js"
   },
   "scripts": {
-    "test": "node test/basic.test.js"
+    "test": "node test/basic.test.js",
+    "start": "node bin/silo.js serve",
+    "serve": "node bin/silo.js serve"
   },
   "keywords": [
     "research",
@@ -25,17 +29,20 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/grainulation/silo.git"
+    "url": "git+https://github.com/grainulation/silo.git"
   },
   "engines": {
     "node": ">=18.0.0"
   },
+  "bugs": {
+    "url": "https://github.com/grainulation/silo/issues"
+  },
+  "homepage": "https://silo.grainulation.com",
   "files": [
     "bin/",
     "lib/",
     "packs/",
     "public/",
-    "README.md",
-    "LICENSE"
+    "CHANGELOG.md"
   ]
 }
