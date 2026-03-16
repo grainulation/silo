@@ -59,7 +59,7 @@ function usage() {
 
 Commands:
   list                              List all stored collections and packs
-  pull <pack> --into <file>         Pull claims from a pack into a claims file
+  pull <pack> --into <file> [--filter <ids>]  Pull claims (optionally filter by ID)
   store <name> --from <file>        Store claims from a file into the silo
   search <query> [--type <type>]    Search across all stored claims
   publish <name> --collections <ids...>  Bundle collections into a pack
@@ -100,7 +100,9 @@ try {
       }
       const dryRun = args.includes('--dry-run');
       const types = flagList('type');
-      const result = io.pull(source, into, { types: types.length ? types : undefined, dryRun });
+      const filterIds = flag('filter');
+      const ids = filterIds ? filterIds.split(',').map((s) => s.trim()) : undefined;
+      const result = io.pull(source, into, { types: types.length ? types : undefined, ids, dryRun });
       if (dryRun) {
         print(`Dry run: would import ${result.wouldImport} claims`);
         print(result.claims);
