@@ -53,6 +53,9 @@ body {
 }
 .conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-left: auto; flex-shrink: 0; }
 .conn-dot.disconnected { background: var(--red); }
+.reconnect-banner { position:fixed;top:0;left:0;right:0;z-index:9999;padding:8px 16px;background:#92400e;color:#fbbf24;font-size:12px;text-align:center;transform:translateY(-100%);transition:transform .3s;font-family:system-ui,sans-serif }
+.reconnect-banner.visible { transform:translateY(0) }
+.reconnect-banner button { background:none;border:1px solid #fbbf24;color:#fbbf24;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:8px }
 
 /* ── search ── */
 .search-box { padding: var(--space-md); border-bottom: 1px solid var(--border); }
@@ -186,6 +189,14 @@ body {
 .empty-state h2 { font-size: 16px; color: var(--fg2); margin-bottom: var(--space-md); }
 .empty-state p { font-size: 12px; max-width: 400px; margin: 0 auto; }
 
+/* ── A11y ── */
+.skip-link{position:absolute;top:-40px;left:0;background:var(--accent);color:#000;padding:8px 16px;z-index:10000;font-size:14px;font-weight:600;transition:top .2s}
+.skip-link:focus{top:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
 /* ── responsive ── */
 @media (max-width: 768px) {
   .app { flex-direction: column; }
@@ -195,10 +206,13 @@ body {
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div id="live-status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+<div class="reconnect-banner" id="reconnectBanner" role="status" aria-live="polite"></div>
 <div class="app">
   <!-- sidebar -->
-  <aside class="sidebar">
-    <div class="header">
+  <aside class="sidebar" aria-label="Sidebar">
+    <header class="header" role="banner">
       <h1><svg width="64" height="56" viewBox="0 0 54 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle"><path d="M24,2.9 L13.6,2.9 C6.0,10.5 6.0,34.1 13.6,45.1 L24,45.1" stroke="#6ee7b7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><text x="24" y="24" text-anchor="middle" dominant-baseline="central" fill="#6ee7b7" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="700">S</text><text x="30.0" y="24" dominant-baseline="central" fill="#e8ecf1" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="700">ilo</text></svg></h1>
       <span class="tool-badge">knowledge</span>
       <span class="conn-dot" id="connDot"></span>
@@ -210,7 +224,7 @@ body {
   </aside>
 
   <!-- main content -->
-  <main class="main" id="mainContent">
+  <main class="main" id="main-content" aria-label="Silo workspace">
     <div class="empty-state" id="emptyState">
       <h2>Knowledge Browser</h2>
       <p>Select a pack from the sidebar to browse its claims, or use the search bar to find specific knowledge across all packs.</p>
@@ -227,17 +241,45 @@ body {
   let activePack = null;
   let searchTimeout = null;
 
-  // ── SSE ──
+  // ── SSE with exponential backoff ──
+  let sseRetryCount = 0;
+  let sseSource = null;
+  function showBanner(count) {
+    const b = document.getElementById('reconnectBanner');
+    if (count > 5) {
+      b.innerHTML = 'Connection lost. <button onclick="sseRetryCount=0;connectSSE()">Retry now</button>';
+    } else if (count > 1) {
+      b.textContent = 'Reconnecting (attempt ' + count + ')...';
+    } else {
+      b.textContent = 'Reconnecting...';
+    }
+    b.classList.add('visible');
+  }
+  function hideBanner() { document.getElementById('reconnectBanner').classList.remove('visible'); }
+
   function connectSSE() {
     const dot = document.getElementById('connDot');
-    const es = new EventSource(API + '/events');
-    es.onopen = () => { dot.classList.remove('disconnected'); };
-    es.onerror = () => { dot.classList.add('disconnected'); };
-    es.onmessage = (e) => {
+    sseSource = new EventSource(API + '/events');
+    sseSource.onopen = () => {
+      sseRetryCount = 0;
+      hideBanner();
+      dot.classList.remove('disconnected');
+    };
+    sseSource.onerror = () => {
+      sseSource.close();
+      dot.classList.add('disconnected');
+      const delay = Math.min(30000, 1000 * Math.pow(2, sseRetryCount)) + Math.random() * 1000;
+      sseRetryCount++;
+      showBanner(sseRetryCount);
+      setTimeout(connectSSE, delay);
+    };
+    sseSource.onmessage = (e) => {
       try {
         const msg = JSON.parse(e.data);
         if (msg.type === 'state') {
           loadPacks();
+          const ls = document.getElementById('live-status');
+          if (ls) ls.textContent = 'Updated: packs refreshed';
         }
       } catch {}
     };
@@ -284,7 +326,7 @@ body {
     activePack = id;
     renderPackList(allPacks);
 
-    const main = document.getElementById('mainContent');
+    const main = document.getElementById('main-content');
     main.innerHTML = '<div style="padding:40px;color:var(--fg3);">Loading...</div>';
 
     try {
@@ -298,7 +340,7 @@ body {
 
   // ── Render pack detail ──
   function renderPackDetail(pack) {
-    const main = document.getElementById('mainContent');
+    const main = document.getElementById('main-content');
     const claims = pack.claims || [];
 
     // Count types and evidence tiers
@@ -406,7 +448,7 @@ body {
   }
 
   function renderSearchResults(query, results) {
-    const main = document.getElementById('mainContent');
+    const main = document.getElementById('main-content');
     if (results.length === 0) {
       main.innerHTML = `
         <div class="empty-state">
@@ -439,15 +481,29 @@ body {
   function showEmpty() {
     activePack = null;
     renderPackList(allPacks);
-    document.getElementById('mainContent').innerHTML = document.getElementById('emptyState')
+    document.getElementById('main-content').innerHTML = document.getElementById('emptyState')
       ? '<div class="empty-state"><h2>Knowledge Browser</h2><p>Select a pack from the sidebar to browse its claims, or use the search bar to find specific knowledge across all packs.</p></div>'
       : '';
   }
 
   // ── Helpers ──
-  function esc(s) { const d = document.createElement('div'); d.textContent = String(s || ''); return d.innerHTML; }
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
   function truncate(s, n) { return s && s.length > n ? s.slice(0, n - 3) + '...' : s || ''; }
   function countBy(arr, key) { const c = {}; for (const i of arr) { const v = i[key] || 'unknown'; c[v] = (c[v] || 0) + 1; } return c; }
+
+  // ── Keyboard navigation ──
+  const siloPanels = ['.sidebar', '.main'];
+  let siloActivePanel = 1;
+  function switchSiloPanel(dir) {
+    siloActivePanel = (siloActivePanel + dir + siloPanels.length) % siloPanels.length;
+    const el = document.querySelector(siloPanels[siloActivePanel]);
+    if (el) { el.setAttribute('tabindex', '-1'); el.focus(); }
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '[' && !e.target.matches('input,textarea')) { e.preventDefault(); switchSiloPanel(-1); }
+    if (e.key === ']' && !e.target.matches('input,textarea')) { e.preventDefault(); switchSiloPanel(1); }
+    if (e.key === 'Escape') { showEmpty(); }
+  });
 
   // ── Init ──
   connectSSE();
