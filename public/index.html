@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-tool="silo">
+<html lang="en" dir="auto" data-tool="silo">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,7 +35,7 @@ body {
 .app { display: flex; height: 100vh; }
 .sidebar {
   width: 320px; min-width: 280px; background: var(--bg2);
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
   display: flex; flex-direction: column; overflow: hidden;
 }
 .main { flex: 1; overflow-y: auto; padding: var(--space-xl); }
@@ -51,11 +51,11 @@ body {
   padding: 2px 6px; border-radius: var(--radius-sm);
   background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border);
 }
-.conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-left: auto; flex-shrink: 0; }
+.conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-inline-start: auto; flex-shrink: 0; }
 .conn-dot.disconnected { background: var(--red); }
 .reconnect-banner { position:fixed;top:0;left:0;right:0;z-index:9999;padding:8px 16px;background:#92400e;color:#fbbf24;font-size:12px;text-align:center;transform:translateY(-100%);transition:transform .3s;font-family:system-ui,sans-serif }
 .reconnect-banner.visible { transform:translateY(0) }
-.reconnect-banner button { background:none;border:1px solid #fbbf24;color:#fbbf24;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:8px }
+.reconnect-banner button { background:none;border:1px solid #fbbf24;color:#fbbf24;padding:2px 10px;border-radius:4px;cursor:pointer;font-size:11px;margin-inline-start:8px }
 
 /* ── search ── */
 .search-box { padding: var(--space-md); border-bottom: 1px solid var(--border); }
@@ -117,7 +117,7 @@ body {
 /* ── claim table ── */
 .claim-table { width: 100%; border-collapse: collapse; }
 .claim-table th {
-  text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px;
+  text-align: start; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px;
   color: var(--fg3); padding: var(--space-sm) var(--space-md);
   border-bottom: 1px solid var(--border);
 }
@@ -140,7 +140,7 @@ body {
   display: inline-block; padding: 1px 6px; border-radius: var(--radius-sm);
   font-size: 10px; background: var(--bg3); color: var(--fg2);
 }
-.tag { display: inline-block; padding: 1px 5px; font-size: 9px; border-radius: var(--radius-sm); background: var(--bg4); color: var(--fg3); margin-right: 3px; }
+.tag { display: inline-block; padding: 1px 5px; font-size: 9px; border-radius: var(--radius-sm); background: var(--bg4); color: var(--fg3); margin-inline-end: 3px; }
 
 /* ── import wizard ── */
 .import-wizard {
@@ -179,7 +179,7 @@ body {
 }
 .search-result-item .sr-collection { font-size: 10px; color: var(--fg3); }
 .search-result-item .sr-content { font-size: 12px; color: var(--fg); }
-.search-result-item .sr-score { font-size: 9px; color: var(--fg3); margin-left: auto; }
+.search-result-item .sr-score { font-size: 9px; color: var(--fg3); margin-inline-start: auto; }
 
 /* ── empty state ── */
 .empty-state {
@@ -190,7 +190,7 @@ body {
 .empty-state p { font-size: 12px; max-width: 400px; margin: 0 auto; }
 
 /* ── A11y ── */
-.skip-link{position:absolute;top:-40px;left:0;background:var(--accent);color:#000;padding:8px 16px;z-index:10000;font-size:14px;font-weight:600;transition:top .2s}
+.skip-link{position:absolute;top:-40px;inset-inline-start:0;background:var(--accent);color:#000;padding:8px 16px;z-index:10000;font-size:14px;font-weight:600;transition:top .2s}
 .skip-link:focus{top:0}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 @media (prefers-reduced-motion: reduce) {
@@ -200,7 +200,7 @@ body {
 /* ── responsive ── */
 @media (max-width: 768px) {
   .app { flex-direction: column; }
-  .sidebar { width: 100%; min-width: unset; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border); }
+  .sidebar { width: 100%; min-width: unset; max-height: 40vh; border-inline-end: none; border-bottom: 1px solid var(--border); }
   .main { padding: var(--space-lg); }
 }
 </style>
@@ -236,6 +236,9 @@ body {
 (function() {
   'use strict';
 
+  // ── i18n passthrough ──
+  const t = (s, v) => v ? s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? k) : s;
+
   const API = '';
   let allPacks = [];
   let activePack = null;
@@ -247,11 +250,11 @@ body {
   function showBanner(count) {
     const b = document.getElementById('reconnectBanner');
     if (count > 5) {
-      b.innerHTML = 'Connection lost. <button onclick="sseRetryCount=0;connectSSE()">Retry now</button>';
+      b.innerHTML = t('Connection lost.') + ' <button onclick="sseRetryCount=0;connectSSE()">' + t('Retry now') + '</button>';
     } else if (count > 1) {
-      b.textContent = 'Reconnecting (attempt ' + count + ')...';
+      b.textContent = t('Reconnecting (attempt {count})...', { count });
     } else {
-      b.textContent = 'Reconnecting...';
+      b.textContent = t('Reconnecting...');
     }
     b.classList.add('visible');
   }
@@ -301,7 +304,7 @@ body {
   function renderPackList(packs) {
     const list = document.getElementById('packList');
     if (packs.length === 0) {
-      list.innerHTML = '<div style="padding:16px;color:var(--fg3);font-size:12px;">No packs found.</div>';
+      list.innerHTML = '<div style="padding:16px;color:var(--fg3);font-size:12px;">' + t('No packs found.') + '</div>';
       return;
     }
     list.innerHTML = packs.map(p => `
@@ -327,7 +330,7 @@ body {
     renderPackList(allPacks);
 
     const main = document.getElementById('main-content');
-    main.innerHTML = '<div style="padding:40px;color:var(--fg3);">Loading...</div>';
+    main.innerHTML = '<div style="padding:40px;color:var(--fg3);">' + t('Loading...') + '</div>';
 
     try {
       const res = await fetch(API + '/api/packs/' + encodeURIComponent(id));
@@ -352,28 +355,28 @@ body {
         <h2>${esc(pack.name || pack.id)}</h2>
         ${pack.description ? `<div class="desc">${esc(pack.description)}</div>` : ''}
         <div class="stats">
-          <div class="stat"><div class="stat-val">${claims.length}</div><div class="stat-label">Claims</div></div>
-          <div class="stat"><div class="stat-val">${Object.keys(types).length}</div><div class="stat-label">Types</div></div>
-          <div class="stat"><div class="stat-val">${Object.keys(evidence).length}</div><div class="stat-label">Evidence Tiers</div></div>
-          <div class="stat"><div class="stat-val">v${esc(pack.version || '1.0.0')}</div><div class="stat-label">Version</div></div>
+          <div class="stat"><div class="stat-val">${claims.length}</div><div class="stat-label">${t('Claims')}</div></div>
+          <div class="stat"><div class="stat-val">${Object.keys(types).length}</div><div class="stat-label">${t('Types')}</div></div>
+          <div class="stat"><div class="stat-val">${Object.keys(evidence).length}</div><div class="stat-label">${t('Evidence Tiers')}</div></div>
+          <div class="stat"><div class="stat-val">v${esc(pack.version || '1.0.0')}</div><div class="stat-label">${t('Version')}</div></div>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">Import into Sprint</div>
+        <div class="panel-title">${t('Import into Sprint')}</div>
         <div class="import-wizard">
           <h3>Import "${esc(pack.name || pack.id)}" into a sprint</h3>
           <input type="text" id="importTarget" placeholder="/path/to/sprint-directory" />
-          <button class="import-btn" id="importBtn">Import ${claims.length} claims</button>
+          <button class="import-btn" id="importBtn">${t('Import {n} claims', { n: claims.length })}</button>
           <div class="import-result" id="importResult"></div>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">Claims (${claims.length})</div>
+        <div class="panel-title">${t('Claims')} (${claims.length})</div>
         <table class="claim-table">
           <thead><tr>
-            <th>ID</th><th>Type</th><th>Topic</th><th>Content</th><th>Evidence</th><th>Tags</th>
+            <th>${t('ID')}</th><th>${t('Type')}</th><th>${t('Topic')}</th><th>${t('Content')}</th><th>${t('Evidence')}</th><th>${t('Tags')}</th>
           </tr></thead>
           <tbody>
             ${claims.map(c => `<tr>
@@ -382,7 +385,7 @@ body {
               <td style="color:var(--fg2);font-size:11px;">${esc(c.topic || '-')}</td>
               <td>${esc(truncate(c.content || c.text || '', 200))}</td>
               <td><span class="evidence-badge">${esc(c.evidence || c.tier || '-')}</span></td>
-              <td>${(c.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</td>
+              <td>${(c.tags || []).map(tg => `<span class="tag">${esc(tg)}</span>`).join('')}</td>
             </tr>`).join('')}
           </tbody>
         </table>
@@ -395,12 +398,12 @@ body {
       const resultEl = document.getElementById('importResult');
       if (!target) {
         resultEl.className = 'import-result error';
-        resultEl.textContent = 'Please enter a target sprint directory.';
+        resultEl.textContent = t('Please enter a target sprint directory.');
         return;
       }
       const btn = document.getElementById('importBtn');
       btn.disabled = true;
-      btn.textContent = 'Importing...';
+      btn.textContent = t('Importing...');
       try {
         const res = await fetch(API + '/api/import', {
           method: 'POST',
@@ -420,7 +423,7 @@ body {
         resultEl.textContent = err.message;
       }
       btn.disabled = false;
-      btn.textContent = `Import ${claims.length} claims`;
+      btn.textContent = t('Import {n} claims', { n: claims.length });
     });
   }
 
@@ -452,15 +455,15 @@ body {
     if (results.length === 0) {
       main.innerHTML = `
         <div class="empty-state">
-          <h2>No results</h2>
-          <p>No claims matched "${esc(query)}". Try different search terms.</p>
+          <h2>${t('No results')}</h2>
+          <p>${t('No claims matched "{query}". Try different search terms.', { query: esc(query) })}</p>
         </div>`;
       return;
     }
 
     main.innerHTML = `
       <div class="panel">
-        <div class="panel-title">Search results for "${esc(query)}" (${results.length})</div>
+        <div class="panel-title">${t('Search results for "{query}"', { query: esc(query) })} (${results.length})</div>
         <div class="search-results">
           ${results.map(r => `
             <div class="search-result-item">
@@ -471,7 +474,7 @@ body {
                 <span class="sr-score">score: ${r.score.toFixed(1)}</span>
               </div>
               <div class="sr-content">${esc(r.claim.content || r.claim.text || '')}</div>
-              ${r.claim.tags && r.claim.tags.length ? `<div style="margin-top:4px;">${r.claim.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+              ${r.claim.tags && r.claim.tags.length ? `<div style="margin-top:4px;">${r.claim.tags.map(tg => `<span class="tag">${esc(tg)}</span>`).join('')}</div>` : ''}
             </div>
           `).join('')}
         </div>
