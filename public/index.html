@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>silo -- knowledge browser</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230a0e1a'/><path d='M32,3.84 L18.18,3.84 C8.04,13.98 8.04,45.52 18.18,60.16 L32,60.16' fill='none' stroke='%236ee7b7' stroke-width='1.28' stroke-linecap='round' stroke-linejoin='round'/><text x='32' y='33' text-anchor='middle' dominant-baseline='central' fill='%236ee7b7' font-family='-apple-system,system-ui,sans-serif' font-size='24' font-weight='700'>S</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230a0e1a'/><path d='M32,3.84 L18.18,3.84 C8.04,13.98 8.04,45.52 18.18,60.16 L32,60.16' fill='none' stroke='%2360a5fa' stroke-width='1.28' stroke-linecap='round' stroke-linejoin='round'/><text x='32' y='33' text-anchor='middle' dominant-baseline='central' fill='%2360a5fa' font-family='-apple-system,system-ui,sans-serif' font-size='24' font-weight='700'>S</text></svg>">
 <style>
 /* ── grainulation tokens (inline, zero deps) ── */
 :root {
@@ -17,8 +17,8 @@
   --radius: 8px; --radius-sm: 4px; --radius-lg: 12px;
   --space-xs: 4px; --space-sm: 8px; --space-md: 12px; --space-lg: 16px; --space-xl: 24px;
   --transition-fast: 0.1s ease; --transition-base: 0.15s ease;
-  /* silo accent: emerald */
-  --accent: #6ee7b7; --accent-light: #a7f3d0; --accent-dim: rgba(110,231,183,0.10); --accent-border: rgba(110,231,183,0.25);
+  /* silo accent: blue */
+  --accent: #60a5fa; --accent-light: #93c5fd; --accent-dim: rgba(96,165,250,0.10); --accent-border: rgba(96,165,250,0.25);
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
@@ -213,14 +213,14 @@ body {
   <!-- sidebar -->
   <aside class="sidebar" aria-label="Sidebar">
     <header class="header" role="banner">
-      <h1><svg width="51" height="44" viewBox="0 0 54 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle"><path d="M22,6 L15.5,6 C9.5,11.5 9.5,26.5 15.5,32 L22,32" stroke="#6ee7b7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><text x="22" y="19" text-anchor="middle" dominant-baseline="central" fill="#6ee7b7" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="800">S</text><text x="27.5" y="19" dominant-baseline="central" fill="#e8ecf1" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="800">ilo</text></svg></h1>
+      <h1><svg width="51" height="44" viewBox="0 0 54 38" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle"><path d="M22,8 L16,8 C10.5,12.5 10.5,25.5 16,30 L22,30" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><text x="22" y="19" text-anchor="middle" dominant-baseline="central" fill="#60a5fa" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="800">S</text><text x="27.5" y="19" dominant-baseline="central" fill="#e8ecf1" font-family="-apple-system,system-ui,sans-serif" font-size="18.2" font-weight="800">ilo</text></svg></h1>
       <span class="tool-badge">knowledge</span>
       <span class="conn-dot" id="connDot"></span>
-    </div>
+    </header>
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search claims across all packs..." />
+      <input type="search" id="searchInput" placeholder="Search claims across all packs..." aria-label="Search claims across all packs" />
     </div>
-    <div class="pack-list" id="packList"></div>
+    <div class="pack-list" id="packList" role="listbox" aria-label="Knowledge packs"></div>
   </aside>
 
   <!-- main content -->
@@ -308,7 +308,7 @@ body {
       return;
     }
     list.innerHTML = packs.map(p => `
-      <div class="pack-card${activePack === p.id ? ' active' : ''}" data-pack="${p.id}">
+      <div class="pack-card${activePack === p.id ? ' active' : ''}" data-pack="${p.id}" role="button" tabindex="0" aria-pressed="${activePack === p.id}">
         <div class="pack-name">${esc(p.name || p.id)}</div>
         <div class="pack-meta">
           <span class="badge">${p.claimCount} claims</span>
@@ -321,6 +321,9 @@ body {
 
     list.querySelectorAll('.pack-card').forEach(card => {
       card.addEventListener('click', () => selectPack(card.dataset.pack));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectPack(card.dataset.pack); }
+      });
     });
   }
 
