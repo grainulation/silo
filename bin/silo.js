@@ -12,6 +12,7 @@
  *   silo packs                         List available knowledge packs
  *   silo templates                     List available sprint templates
  *   silo serve [--port 9095]           Start the knowledge browser UI
+ *   silo analyze                        Run cross-library analytics (requires harvest)
  *   silo serve-mcp                     Start the MCP server on stdio
  */
 
@@ -85,6 +86,7 @@ Commands:
   packs                             List available knowledge packs
   templates                         List available sprint templates
   install <file>                    Install a pack from a file
+  analyze                            Run cross-library analytics (requires harvest)
   serve [--port 9095]               Start the knowledge browser UI
   serve-mcp                         Start the MCP server on stdio
 
@@ -231,6 +233,49 @@ try {
       }
       const result = packs.install(filePath);
       print(`Installed pack "${result.id}" (${result.claimCount} claims)`);
+      break;
+    }
+
+    case 'analyze': {
+      const { analyzeLibrary } = require('../lib/analytics.js');
+      const result = analyzeLibrary(store);
+      if (jsonMode) {
+        print(JSON.stringify(result));
+        break;
+      }
+      if (!result.available) {
+        print(`silo analyze: harvest not found.\n\nThe analyze command requires @grainulation/harvest in a sibling directory.\nExpected locations:\n  ../harvest/lib/analyzer.js\n\nInstall harvest alongside silo and try again.`);
+        process.exit(1);
+      }
+      if (!result.analysis) {
+        print(`silo analyze: ${result.reason || 'no data to analyze'}`);
+        break;
+      }
+      print(`Cross-library analytics (${result.collectionCount} collection(s)):\n`);
+      const analysis = result.analysis;
+      if (analysis.typeDistribution) {
+        print('Type distribution:');
+        for (const [type, count] of Object.entries(analysis.typeDistribution)) {
+          print(`  ${type}: ${count}`);
+        }
+        print('');
+      }
+      if (analysis.evidenceQuality) {
+        print('Evidence quality:');
+        for (const [tier, count] of Object.entries(analysis.evidenceQuality)) {
+          print(`  ${tier}: ${count}`);
+        }
+        print('');
+      }
+      // Print any other top-level keys from the analysis
+      for (const [key, value] of Object.entries(analysis)) {
+        if (key === 'typeDistribution' || key === 'evidenceQuality') continue;
+        if (typeof value === 'object') {
+          print(`${key}: ${JSON.stringify(value, null, 2)}`);
+        } else {
+          print(`${key}: ${value}`);
+        }
+      }
       break;
     }
 
