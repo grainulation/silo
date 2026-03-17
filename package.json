@@ -15,7 +15,7 @@
     "silo": "bin/silo.js"
   },
   "scripts": {
-    "test": "node test/basic.test.js",
+    "test": "node test/basic.test.cjs",
     "start": "node bin/silo.js serve",
     "serve": "node bin/silo.js serve"
   },
