@@ -1,7 +1,6 @@
 {
   "name": "@grainulation/silo",
   "version": "1.0.0",
-  "type": "module",
   "description": "Reusable knowledge for research sprints -- shared claim libraries, templates, and knowledge packs",
   "main": "lib/index.js",
   "exports": {
@@ -15,7 +14,7 @@
     "silo": "bin/silo.js"
   },
   "scripts": {
-    "test": "node test/basic.test.cjs",
+    "test": "node test/basic.test.js",
     "start": "node bin/silo.js serve",
     "serve": "node bin/silo.js serve"
   },
