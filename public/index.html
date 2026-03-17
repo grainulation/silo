@@ -269,7 +269,7 @@ function hideBanner() { $('reconnectBanner').classList.remove('visible'); }
 function connectSSE() {
   sseSource = new EventSource('/events');
   sseSource.onopen = function() {
-    sseRetryCount = 0; hideBanner();
+    sseRetryCount = 0;
     $('sse-dot').className = 'status-dot ok';
     if (window._grainSetState) window._grainSetState('idle');
   };
@@ -279,7 +279,6 @@ function connectSSE() {
     if (window._grainSetState) window._grainSetState('orbit');
     var delay = Math.min(30000, 1000 * Math.pow(2, sseRetryCount)) + Math.random() * 1000;
     sseRetryCount++;
-    showBanner(sseRetryCount);
     setTimeout(connectSSE, delay);
   };
   sseSource.onmessage = function(e) {
