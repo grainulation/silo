@@ -22,9 +22,17 @@ Zero dependencies. Filesystem-based storage. Works offline.
 
 | Pack | Claims | What's inside |
 |------|--------|---------------|
-| `compliance` | 14 | HIPAA, SOC 2, GDPR constraint sets with regulatory citations |
-| `migration` | 10 | Database/cloud/framework migration risks and patterns |
+| `api-design` | 13 | REST conventions, versioning, pagination, error formats, GraphQL tradeoffs |
 | `architecture` | 12 | Monolith vs micro, build vs buy, SQL vs NoSQL decision claims |
+| `ci-cd` | 12 | CI/CD pipeline patterns, caching, rollback strategies |
+| `compliance` | 14 | HIPAA, SOC 2, GDPR constraint sets with regulatory citations |
+| `data-engineering` | 12 | ETL patterns, data quality, warehouse design |
+| `frontend` | 12 | Frontend architecture, performance, accessibility patterns |
+| `migration` | 10 | Database/cloud/framework migration risks and patterns |
+| `observability` | 12 | Logging, metrics, tracing, alerting patterns |
+| `security` | 12 | Security constraints, threat models, authentication patterns |
+| `team-process` | 12 | Team workflow, code review, incident response patterns |
+| `testing` | 10 | Testing strategies, coverage, test architecture |
 
 ## Quick Start
 

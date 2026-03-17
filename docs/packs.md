@@ -1,122 +1,101 @@
 # Silo Knowledge Packs
 
-A knowledge pack is a portable bundle of claims that can be loaded into any wheat sprint. Packs let you reuse research findings, share domain expertise, and bootstrap new sprints with established knowledge.
-
-## What Is a Pack
-
-A pack is a directory containing a `pack.json` file and optional supporting files. The `pack.json` holds a claims array and metadata describing the pack's origin, scope, and version.
-
-When you load a pack into a sprint, silo merges its claims into your `claims.json` with prefixed IDs to avoid collisions.
+A knowledge pack is a JSON file containing curated claims on a specific domain. Packs ship with silo and can be pulled into any wheat sprint.
 
 ## Pack Schema
 
+Each pack is a JSON file with this structure:
+
 ```json
 {
-  "name": "postgres-connection-pooling",
-  "version": "1.2.0",
-  "description": "Research findings on Postgres connection pooling strategies",
-  "author": "your-name",
-  "schema_version": "1.0.0",
-  "created": "2026-01-15T10:00:00Z",
-  "updated": "2026-03-10T14:30:00Z",
-  "tags": ["postgres", "database", "performance"],
+  "name": "API Design",
+  "description": "REST conventions, versioning strategies, ...",
+  "version": "1.0.0",
   "claims": [
-    { "id": "r003", "type": "factual", "tier": "documented", "status": "active",
-      "text": "pgBouncer supports transaction-level pooling",
-      "source": "https://www.pgbouncer.org/config.html", "created": "2026-01-15T10:30:00Z" }
-  ],
-  "metadata": { "original_sprint": "connection-pooling-eval", "claim_count": 42, "compilation_hash": "sha256:abc123..." }
+    {
+      "id": "api-001",
+      "type": "constraint",
+      "topic": "HTTP method semantics",
+      "content": "GET must be safe and idempotent ...",
+      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "evidence": "documented",
+      "status": "active",
+      "phase_added": "define",
+      "timestamp": "2025-01-01T00:00:00.000Z",
+      "conflicts_with": [],
+      "resolved_by": null,
+      "tags": ["api", "rest"]
+    }
+  ]
 }
 ```
 
-### Required Fields
+### Top-level fields
 
 | Field | Type | Description |
 |---|---|---|
-| `name` | string | Unique pack identifier, lowercase with hyphens |
-| `version` | string | Semver version of the pack |
-| `schema_version` | string | Grainulation schema version (currently `1.0.0`) |
+| `name` | string | Human-readable pack name |
+| `description` | string | What the pack covers |
+| `version` | string | Semver version |
 | `claims` | array | Array of claim objects |
 
-### Optional Fields
+### Claim fields
 
 | Field | Type | Description |
 |---|---|---|
-| `description` | string | Human-readable summary |
-| `author` | string | Pack author |
+| `id` | string | Unique claim ID within the pack |
+| `type` | string | `constraint`, `factual`, `estimate`, `risk`, `recommendation`, or `feedback` |
+| `topic` | string | Short topic label |
+| `content` | string | The claim text |
+| `source` | object | `{ origin, artifact, connector }` |
+| `evidence` | string | `stated`, `web`, `documented`, `tested`, or `production` |
+| `status` | string | `active` or `retracted` |
+| `phase_added` | string | Phase when added (e.g. `define`, `research`) |
+| `timestamp` | string | ISO 8601 timestamp |
+| `conflicts_with` | array | IDs of conflicting claims |
+| `resolved_by` | string | ID of resolving claim, or null |
 | `tags` | array | Searchable tags |
-| `created` | string | ISO 8601 creation timestamp |
-| `updated` | string | ISO 8601 last-updated timestamp |
-| `metadata` | object | Arbitrary metadata about the pack's origin |
 
 ## Built-in Packs
 
-Silo ships with these packs ready to use:
+Silo ships with 11 packs in the `packs/` directory:
 
 | Pack | Claims | Description |
 |---|---|---|
-| `security-baseline` | 28 | OWASP top 10 risks and standard mitigations |
-| `api-design` | 34 | REST/GraphQL design constraints and trade-offs |
-| `ci-cd-patterns` | 22 | Common CI/CD pipeline patterns and failure modes |
-| `data-migration` | 19 | Data migration risks, estimates, and checklists |
-| `accessibility` | 31 | WCAG 2.1 AA constraints and testing recommendations |
+| `api-design` | 13 | REST conventions, versioning, pagination, error formats, GraphQL tradeoffs |
+| `architecture` | 12 | Monolith vs micro, build vs buy, SQL vs NoSQL decision claims |
+| `ci-cd` | 12 | CI/CD pipeline patterns, caching, rollback strategies |
+| `compliance` | 14 | HIPAA, SOC 2, GDPR constraint sets with regulatory citations |
+| `data-engineering` | 12 | ETL patterns, data quality, warehouse design |
+| `frontend` | 12 | Frontend architecture, performance, accessibility patterns |
+| `migration` | 10 | Database/cloud/framework migration risks and patterns |
+| `observability` | 12 | Logging, metrics, tracing, alerting patterns |
+| `security` | 12 | Security constraints, threat models, authentication patterns |
+| `team-process` | 12 | Team workflow, code review, incident response patterns |
+| `testing` | 10 | Testing strategies, coverage, test architecture |
 
-Load a built-in pack:
+## Commands
 
-```bash
-npx @grainulation/silo load security-baseline
-```
-
-## Creating Custom Packs
-
-Export claims from any wheat sprint into a pack:
-
-```bash
-npx @grainulation/silo pack --name my-findings --from ./claims.json
-```
-
-This creates a `my-findings/` directory with `pack.json` inside. You can filter which claims to include:
+### Pull a pack into your sprint
 
 ```bash
-silo pack --name db-risks --from ./claims.json --type risk --topic database
-silo pack --name tested-only --from ./claims.json --min-tier tested
+silo pull <pack> --into <file>
 ```
 
-### Editing a Pack
+Resolves the pack, re-prefixes claim IDs to avoid collisions, deduplicates against existing claims, and merges into your claims file.
 
-After creation, you can prune or annotate claims before publishing:
+### Publish a pack from stored collections
 
 ```bash
-silo pack edit my-findings --retract r015
-silo pack edit my-findings --tag "postgres,performance"
-silo pack validate my-findings
+silo publish <name> --collections <id1> <id2> ...
 ```
 
-The `validate` command checks schema conformance and flags broken references.
+Bundles one or more stored collections into a reusable pack.
 
-## Publishing Community Packs
-
-Packs are published as npm packages under the `@grainulation-packs` scope:
+### Install a pack from a file
 
 ```bash
-cd my-findings/
-npm init --scope=@grainulation-packs
-npm publish
+silo install <file>
 ```
 
-Others can then load your pack by name:
-
-```bash
-silo load @grainulation-packs/my-findings
-```
-
-### Pack Resolution Order
-
-When loading a pack by name, silo checks these locations in order:
-
-1. Local directory (`./<name>/pack.json`)
-2. Silo cache (`~/.grainulation/silo/packs/<name>/`)
-3. Built-in packs (bundled with silo)
-4. npm registry (`@grainulation-packs/<name>`)
-
-The first match wins. Use `--source npm` to force registry lookup.
+Installs a pack JSON file into silo's local storage for future use.
