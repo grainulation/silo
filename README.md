@@ -1,24 +1,24 @@
 # @grainulation/silo
 
-Reusable knowledge for research sprints. Grab a starter pack in one command:
+[![npm version](https://img.shields.io/npm/v/@grainulation/silo)](https://www.npmjs.com/package/@grainulation/silo) [![npm downloads](https://img.shields.io/npm/dm/@grainulation/silo)](https://www.npmjs.com/package/@grainulation/silo) [![license](https://img.shields.io/npm/l/@grainulation/silo)](https://github.com/grainulation/silo/blob/main/LICENSE) [![node](https://img.shields.io/node/v/@grainulation/silo)](https://nodejs.org) [![CI](https://github.com/grainulation/silo/actions/workflows/ci.yml/badge.svg)](https://github.com/grainulation/silo/actions)
+
+**Reusable knowledge for research sprints.**
+
+Instead of starting every sprint from scratch, pull in battle-tested constraint sets, risk patterns, and decision templates. Grab a starter pack in one command:
 
 ```bash
 npx @grainulation/silo pull compliance --into ./claims.json
 ```
 
-## What is Silo?
+## Install
 
-Silo stores and shares research knowledge across projects and teams. Instead of starting every sprint from scratch, pull in battle-tested constraint sets, risk patterns, and decision templates.
+```bash
+npm install -g @grainulation/silo
+```
 
-- **Shared claim libraries** -- reusable constraint sets (HIPAA, SOC 2, GDPR, etc.)
-- **Community sprint templates** -- pre-built research questions with seeded claims
-- **Claim import/export** -- pull claims from one sprint into another
-- **Knowledge packs** -- version-controlled bundles teams can subscribe to
-- **Full-text search** -- find relevant claims across everything you've stored
+## Built-in packs
 
-Zero dependencies. Filesystem-based storage. Works offline.
-
-## Built-in Packs
+11 knowledge packs with 131 curated claims:
 
 | Pack | Claims | What's inside |
 |------|--------|---------------|
@@ -34,7 +34,7 @@ Zero dependencies. Filesystem-based storage. Works offline.
 | `team-process` | 12 | Team workflow, code review, incident response patterns |
 | `testing` | 10 | Testing strategies, coverage, test architecture |
 
-## Quick Start
+## Quick start
 
 ```bash
 # See available packs
@@ -56,7 +56,7 @@ silo store "q4-migration-findings" --from ./claims.json
 silo list
 ```
 
-## CLI Reference
+## CLI
 
 | Command | Description |
 |---------|-------------|
@@ -65,25 +65,16 @@ silo list
 | `silo store <name> --from <file>` | Store claims from a sprint |
 | `silo search <query>` | Full-text search across claims |
 | `silo packs` | List available knowledge packs |
-| `silo templates` | List saved sprint templates |
 | `silo publish <name> --collections <ids>` | Bundle collections into a pack |
 | `silo install <file>` | Install a pack from a JSON file |
 
-## How It Works
+## How it works
 
-Silo uses your filesystem for storage (`~/.silo` by default). No database, no network calls, no accounts. Claims are JSON files organized by collection, indexed for search.
+Silo uses your filesystem for storage (`~/.silo` by default). No database, no network calls, no accounts.
 
-When you `pull`, Silo:
-1. Resolves the source (built-in pack or stored collection)
-2. Re-prefixes claim IDs to avoid collisions
-3. Deduplicates against existing claims in the target
-4. Merges into your claims.json
+When you `pull`, Silo re-prefixes claim IDs to avoid collisions, deduplicates against existing claims, and merges into your claims.json.
 
-When you `store`, Silo:
-1. Reads your sprint's claims.json
-2. Hashes the content for versioning
-3. Saves to `~/.silo/claims/` with metadata
-4. Updates the search index
+When you `store`, Silo hashes the content for versioning, saves to `~/.silo/claims/`, and updates the search index.
 
 ## Programmatic API
 
@@ -96,15 +87,27 @@ const store = new Store().init();
 const search = new Search(store);
 const io = new ImportExport(store);
 
-// Search for encryption-related claims
 const results = search.query('encryption', { type: 'constraint' });
-
-// Pull a pack programmatically
 io.pull('compliance', './claims.json');
-
-// Store findings
 io.push('./claims.json', 'my-sprint-findings');
 ```
+
+## Zero dependencies
+
+Node built-in modules only. Filesystem-based storage. Works offline.
+
+## Part of the grainulation ecosystem
+
+| Tool | Role |
+|------|------|
+| [wheat](https://github.com/grainulation/wheat) | Research engine -- grow structured evidence |
+| [farmer](https://github.com/grainulation/farmer) | Permission dashboard -- approve AI actions in real time |
+| [barn](https://github.com/grainulation/barn) | Shared tools -- templates, validators, sprint detection |
+| [mill](https://github.com/grainulation/mill) | Format conversion -- export to PDF, CSV, slides, 24 formats |
+| **silo** | Knowledge storage -- reusable claim libraries and packs |
+| [harvest](https://github.com/grainulation/harvest) | Analytics -- cross-sprint patterns and prediction scoring |
+| [orchard](https://github.com/grainulation/orchard) | Orchestration -- multi-sprint coordination and dependencies |
+| [grainulation](https://github.com/grainulation/grainulation) | Unified CLI -- single entry point to the ecosystem |
 
 ## License
 
