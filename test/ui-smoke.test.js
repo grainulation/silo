@@ -1,37 +1,37 @@
-'use strict';
+"use strict";
 
-const { describe, it } = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
+const { describe, it } = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 
-const HTML_PATH = path.join(__dirname, '..', 'public', 'index.html');
-const html = fs.readFileSync(HTML_PATH, 'utf-8');
+const HTML_PATH = path.join(__dirname, "..", "public", "index.html");
+const html = fs.readFileSync(HTML_PATH, "utf-8");
 
 // ─── Shared shell elements ───────────────────────────────────────────────────
 
-describe('Silo UI shell elements', () => {
-  it('has searchInput', () => {
+describe("Silo UI shell elements", () => {
+  it("has searchInput", () => {
     assert.ok(html.indexOf('id="searchInput"') !== -1);
   });
 
-  it('has grainLogo canvas', () => {
+  it("has grainLogo canvas", () => {
     assert.ok(html.indexOf('id="grainLogo"') !== -1);
   });
 
-  it('has main-content', () => {
+  it("has main-content", () => {
     assert.ok(html.indexOf('id="main-content"') !== -1);
   });
 
-  it('has sse-dot', () => {
+  it("has sse-dot", () => {
     assert.ok(html.indexOf('id="sse-dot"') !== -1);
   });
 
-  it('has reconnectBanner', () => {
+  it("has reconnectBanner", () => {
     assert.ok(html.indexOf('id="reconnectBanner"') !== -1);
   });
 
-  it('has toast-container', () => {
+  it("has toast-container", () => {
     assert.ok(html.indexOf('id="toast-container"') !== -1);
   });
 
@@ -52,48 +52,48 @@ describe('Silo UI shell elements', () => {
 
 // ─── CSS tokens ──────────────────────────────────────────────────────────────
 
-describe('Silo CSS tokens', () => {
-  it('has --bg: #0a0e1a', () => {
+describe("Silo CSS tokens", () => {
+  it("has --bg: #0a0e1a", () => {
     assert.ok(/--bg:\s*#0a0e1a/.test(html));
   });
 
-  it('has --accent: #6ee7b7 (silo emerald)', () => {
+  it("has --accent: #6ee7b7 (silo emerald)", () => {
     assert.ok(/--accent:\s*#6ee7b7/.test(html));
   });
 
-  it('has --accent-light', () => {
-    assert.ok(html.indexOf('--accent-light') !== -1);
+  it("has --accent-light", () => {
+    assert.ok(html.indexOf("--accent-light") !== -1);
   });
 
-  it('has --accent-dim', () => {
-    assert.ok(html.indexOf('--accent-dim') !== -1);
+  it("has --accent-dim", () => {
+    assert.ok(html.indexOf("--accent-dim") !== -1);
   });
 
-  it('has --accent-border', () => {
-    assert.ok(html.indexOf('--accent-border') !== -1);
+  it("has --accent-border", () => {
+    assert.ok(html.indexOf("--accent-border") !== -1);
   });
 });
 
 // ─── TOOL config ─────────────────────────────────────────────────────────────
 
-describe('Silo TOOL config', () => {
-  it('has name: \'Silo\'', () => {
+describe("Silo TOOL config", () => {
+  it("has name: 'Silo'", () => {
     assert.ok(html.indexOf("name: 'Silo'") !== -1);
   });
 
-  it('has letter: \'S\'', () => {
+  it("has letter: 'S'", () => {
     assert.ok(html.indexOf("letter: 'S'") !== -1);
   });
 
-  it('has color: \'#6ee7b7\'', () => {
+  it("has color: '#6ee7b7'", () => {
     assert.ok(html.indexOf("color: '#6ee7b7'") !== -1);
   });
 });
 
 // ─── Self-contained rule ─────────────────────────────────────────────────────
 
-describe('Silo self-contained (no external resources)', () => {
-  it('has no <script src= tags', () => {
+describe("Silo self-contained (no external resources)", () => {
+  it("has no <script src= tags", () => {
     assert.ok(/<script\s+src=/.test(html) === false);
   });
 
@@ -104,28 +104,30 @@ describe('Silo self-contained (no external resources)', () => {
 
 // ─── Keyboard shortcuts ─────────────────────────────────────────────────────
 
-describe('Silo keyboard shortcuts', () => {
-  it('handles / key for search focus', () => {
+describe("Silo keyboard shortcuts", () => {
+  it("handles / key for search focus", () => {
     assert.ok(html.indexOf("key === '/'") !== -1);
   });
 
-  it('handles Escape key', () => {
-    assert.ok(html.indexOf("'Escape'") !== -1 || html.indexOf('"Escape"') !== -1);
+  it("handles Escape key", () => {
+    assert.ok(
+      html.indexOf("'Escape'") !== -1 || html.indexOf('"Escape"') !== -1,
+    );
   });
 });
 
 // ─── Functions ───────────────────────────────────────────────────────────────
 
-describe('Silo required functions', () => {
-  it('has connectSSE function', () => {
-    assert.ok(html.indexOf('connectSSE') !== -1);
+describe("Silo required functions", () => {
+  it("has connectSSE function", () => {
+    assert.ok(html.indexOf("connectSSE") !== -1);
   });
 
-  it('has toast function', () => {
-    assert.ok(html.indexOf('function toast') !== -1);
+  it("has toast function", () => {
+    assert.ok(html.indexOf("function toast") !== -1);
   });
 
-  it('has switchMobilePanel function', () => {
-    assert.ok(html.indexOf('switchMobilePanel') !== -1);
+  it("has switchMobilePanel function", () => {
+    assert.ok(html.indexOf("switchMobilePanel") !== -1);
   });
 });

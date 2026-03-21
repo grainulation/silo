@@ -16,25 +16,29 @@
  *   silo serve-mcp                     Start the MCP server on stdio
  */
 
-const { Store } = require('../lib/store.js');
-const { Search } = require('../lib/search.js');
-const { ImportExport } = require('../lib/import-export.js');
-const { Templates } = require('../lib/templates.js');
-const { Packs } = require('../lib/packs.js');
-const { Graph } = require('../lib/graph.js');
+const { Store } = require("../lib/store.js");
+const { Search } = require("../lib/search.js");
+const { ImportExport } = require("../lib/import-export.js");
+const { Templates } = require("../lib/templates.js");
+const { Packs } = require("../lib/packs.js");
+const { Graph } = require("../lib/graph.js");
 
 // ── --version / -v (before verbose check) ──
-if (process.argv.includes('--version') || (process.argv.includes('-v') && process.argv.length === 3)) {
-  const pkg = require('../package.json');
-  process.stdout.write(pkg.version + '\n');
+if (
+  process.argv.includes("--version") ||
+  (process.argv.includes("-v") && process.argv.length === 3)
+) {
+  const pkg = require("../package.json");
+  process.stdout.write(pkg.version + "\n");
   process.exit(0);
 }
 
-const verbose = process.argv.includes('--verbose') || process.argv.includes('-v');
+const verbose =
+  process.argv.includes("--verbose") || process.argv.includes("-v");
 function vlog(...a) {
   if (!verbose) return;
   const ts = new Date().toISOString();
-  process.stderr.write(`[${ts}] silo: ${a.join(' ')}\n`);
+  process.stderr.write(`[${ts}] silo: ${a.join(" ")}\n`);
 }
 
 const store = new Store();
@@ -46,9 +50,9 @@ const packs = new Packs(store);
 const args = process.argv.slice(2);
 const command = args[0];
 
-vlog('startup', `command=${command || '(none)'}`, `cwd=${process.cwd()}`);
+vlog("startup", `command=${command || "(none)"}`, `cwd=${process.cwd()}`);
 
-const jsonMode = args.includes('--json');
+const jsonMode = args.includes("--json");
 
 function flag(name) {
   const idx = args.indexOf(`--${name}`);
@@ -61,17 +65,17 @@ function flagList(name) {
   if (idx === -1) return [];
   const values = [];
   for (let i = idx + 1; i < args.length; i++) {
-    if (args[i].startsWith('--')) break;
+    if (args[i].startsWith("--")) break;
     values.push(args[i]);
   }
   return values;
 }
 
 function print(obj) {
-  if (typeof obj === 'string') {
-    process.stdout.write(obj + '\n');
+  if (typeof obj === "string") {
+    process.stdout.write(obj + "\n");
   } else {
-    process.stdout.write(JSON.stringify(obj, null, 2) + '\n');
+    process.stdout.write(JSON.stringify(obj, null, 2) + "\n");
   }
 }
 
@@ -102,135 +106,160 @@ Examples:
 
 try {
   switch (command) {
-    case 'list': {
+    case "list": {
       const collections = store.list();
       if (jsonMode) {
         print(JSON.stringify(collections));
         break;
       }
       if (collections.length === 0) {
-        print('No stored collections. Use "silo store" to save claims or "silo packs" to see built-in packs.');
+        print(
+          'No stored collections. Use "silo store" to save claims or "silo packs" to see built-in packs.',
+        );
       } else {
-        print('Stored collections:\n');
+        print("Stored collections:\n");
         for (const c of collections) {
-          print(`  ${c.id}  (${c.type || 'claims'}, ${c.claimCount} claims)  ${c.storedAt || ''}`);
+          print(
+            `  ${c.id}  (${c.type || "claims"}, ${c.claimCount} claims)  ${c.storedAt || ""}`,
+          );
         }
       }
       break;
     }
 
-    case 'pull': {
+    case "pull": {
       const source = args[1];
-      const into = flag('into');
+      const into = flag("into");
       if (!source || !into) {
-        print('Usage: silo pull <pack> --into <file>');
+        print("Usage: silo pull <pack> --into <file>");
         process.exit(1);
       }
-      const dryRun = args.includes('--dry-run');
-      const types = flagList('type');
-      const filterIds = flag('filter');
-      const ids = filterIds ? filterIds.split(',').map((s) => s.trim()) : undefined;
-      const result = io.pull(source, into, { types: types.length ? types : undefined, ids, dryRun });
+      const dryRun = args.includes("--dry-run");
+      const types = flagList("type");
+      const filterIds = flag("filter");
+      const ids = filterIds
+        ? filterIds.split(",").map((s) => s.trim())
+        : undefined;
+      const result = io.pull(source, into, {
+        types: types.length ? types : undefined,
+        ids,
+        dryRun,
+      });
       if (dryRun) {
         print(`Dry run: would import ${result.wouldImport} claims`);
         print(result.claims);
       } else {
-        print(`Imported ${result.imported} claims into ${into} (${result.skippedDuplicates} duplicates skipped, ${result.totalClaims} total)`);
+        print(
+          `Imported ${result.imported} claims into ${into} (${result.skippedDuplicates} duplicates skipped, ${result.totalClaims} total)`,
+        );
       }
       break;
     }
 
-    case 'store': {
+    case "store": {
       const name = args[1];
-      const from = flag('from');
+      const from = flag("from");
       if (!name || !from) {
-        print('Usage: silo store <name> --from <file>');
+        print("Usage: silo store <name> --from <file>");
         process.exit(1);
       }
       const result = io.push(from, name);
-      print(`Stored "${name}" (${result.claimCount} claims, hash: ${result.hash})`);
+      print(
+        `Stored "${name}" (${result.claimCount} claims, hash: ${result.hash})`,
+      );
       break;
     }
 
-    case 'search': {
-      const query = args.slice(1).filter((a) => !a.startsWith('--')).join(' ');
+    case "search": {
+      const query = args
+        .slice(1)
+        .filter((a) => !a.startsWith("--"))
+        .join(" ");
       if (!query) {
-        print('Usage: silo search <query> [--type <type>] [--evidence <tier>]');
+        print("Usage: silo search <query> [--type <type>] [--evidence <tier>]");
         process.exit(1);
       }
-      const type = flag('type');
-      const tier = flag('tier');
+      const type = flag("type");
+      const tier = flag("tier");
       const results = search.query(query, { type, tier });
       if (jsonMode) {
         print(JSON.stringify(results));
         break;
       }
       if (results.length === 0) {
-        print('No matches found.');
+        print("No matches found.");
       } else {
         print(`${results.length} result(s):\n`);
         for (const r of results) {
-          const text = r.claim.content || r.claim.text || '';
-          const tier = r.claim.evidence || r.claim.tier || 'unknown';
-          print(`  [${r.claim.id}] (${r.claim.type}, ${tier}) ${text.slice(0, 120)}${text.length > 120 ? '...' : ''}`);
+          const text = r.claim.content || r.claim.text || "";
+          const tier = r.claim.evidence || r.claim.tier || "unknown";
+          print(
+            `  [${r.claim.id}] (${r.claim.type}, ${tier}) ${text.slice(0, 120)}${text.length > 120 ? "..." : ""}`,
+          );
           print(`    from: ${r.collection}  score: ${r.score}\n`);
         }
       }
       break;
     }
 
-    case 'publish': {
+    case "publish": {
       const name = args[1];
-      const collections = flagList('collections');
+      const collections = flagList("collections");
       if (!name || collections.length === 0) {
-        print('Usage: silo publish <name> --collections <id1> <id2> ...');
+        print("Usage: silo publish <name> --collections <id1> <id2> ...");
         process.exit(1);
       }
-      const desc = flag('description') || '';
+      const desc = flag("description") || "";
       const result = packs.bundle(name, collections, { description: desc });
-      print(`Published pack "${name}" (${result.claimCount} claims) -> ${result.path}`);
+      print(
+        `Published pack "${name}" (${result.claimCount} claims) -> ${result.path}`,
+      );
       break;
     }
 
-    case 'packs': {
+    case "packs": {
       const allPacks = packs.list();
       if (jsonMode) {
         print(JSON.stringify(allPacks));
         break;
       }
       if (allPacks.length === 0) {
-        print('No packs available.');
+        print("No packs available.");
       } else {
-        print('Available packs:\n');
+        print("Available packs:\n");
         for (const p of allPacks) {
-          print(`  ${p.id}  ${p.name}  (${p.claimCount} claims, v${p.version}, ${p.source})`);
+          print(
+            `  ${p.id}  ${p.name}  (${p.claimCount} claims, v${p.version}, ${p.source})`,
+          );
           if (p.description) print(`    ${p.description.slice(0, 100)}`);
-          print('');
+          print("");
         }
       }
       break;
     }
 
-    case 'templates': {
+    case "templates": {
       const allTemplates = templates.list();
       if (jsonMode) {
         print(JSON.stringify(allTemplates));
         break;
       }
       if (allTemplates.length === 0) {
-        print('No templates saved yet. Use the Templates API to create them.');
+        print("No templates saved yet. Use the Templates API to create them.");
       } else {
         for (const t of allTemplates) {
-          print(`  ${t.id}  "${t.question || t.name}"  (${t.seedClaims} seed claims)  [${t.tags.join(', ')}]`);
+          print(
+            `  ${t.id}  "${t.question || t.name}"  (${t.seedClaims} seed claims)  [${t.tags.join(", ")}]`,
+          );
         }
       }
       break;
     }
 
-    case 'install': {
+    case "install": {
       const filePath = args[1];
       if (!filePath) {
-        print('Usage: silo install <pack-file.json>');
+        print("Usage: silo install <pack-file.json>");
         process.exit(1);
       }
       const result = packs.install(filePath);
@@ -238,41 +267,45 @@ try {
       break;
     }
 
-    case 'analyze': {
-      const { analyzeLibrary } = require('../lib/analytics.js');
+    case "analyze": {
+      const { analyzeLibrary } = require("../lib/analytics.js");
       const result = analyzeLibrary(store);
       if (jsonMode) {
         print(JSON.stringify(result));
         break;
       }
       if (!result.available) {
-        print(`silo analyze: harvest not found.\n\nThe analyze command requires @grainulation/harvest in a sibling directory.\nExpected locations:\n  ../harvest/lib/analyzer.js\n\nInstall harvest alongside silo and try again.`);
+        print(
+          `silo analyze: harvest not found.\n\nThe analyze command requires @grainulation/harvest in a sibling directory.\nExpected locations:\n  ../harvest/lib/analyzer.js\n\nInstall harvest alongside silo and try again.`,
+        );
         process.exit(1);
       }
       if (!result.analysis) {
-        print(`silo analyze: ${result.reason || 'no data to analyze'}`);
+        print(`silo analyze: ${result.reason || "no data to analyze"}`);
         break;
       }
-      print(`Cross-library analytics (${result.collectionCount} collection(s)):\n`);
+      print(
+        `Cross-library analytics (${result.collectionCount} collection(s)):\n`,
+      );
       const analysis = result.analysis;
       if (analysis.typeDistribution) {
-        print('Type distribution:');
+        print("Type distribution:");
         for (const [type, count] of Object.entries(analysis.typeDistribution)) {
           print(`  ${type}: ${count}`);
         }
-        print('');
+        print("");
       }
       if (analysis.evidenceQuality) {
-        print('Evidence quality:');
+        print("Evidence quality:");
         for (const [tier, count] of Object.entries(analysis.evidenceQuality)) {
           print(`  ${tier}: ${count}`);
         }
-        print('');
+        print("");
       }
       // Print any other top-level keys from the analysis
       for (const [key, value] of Object.entries(analysis)) {
-        if (key === 'typeDistribution' || key === 'evidenceQuality') continue;
-        if (typeof value === 'object') {
+        if (key === "typeDistribution" || key === "evidenceQuality") continue;
+        if (typeof value === "object") {
           print(`${key}: ${JSON.stringify(value, null, 2)}`);
         } else {
           print(`${key}: ${value}`);
@@ -281,86 +314,130 @@ try {
       break;
     }
 
-    case 'graph': {
+    case "graph": {
       const graph = new Graph(store);
-      const action = args[1] || 'stats';
+      const action = args[1] || "stats";
       const stats = graph.build();
 
-      if (action === 'stats') {
-        if (jsonMode) { print(JSON.stringify(stats)); break; }
-        print(`Knowledge graph: ${stats.nodes} nodes, ${stats.edges} edges, ${stats.sources} sources, ${stats.topics} topics, ${stats.tags} tags`);
-      } else if (action === 'related') {
+      if (action === "stats") {
+        if (jsonMode) {
+          print(JSON.stringify(stats));
+          break;
+        }
+        print(
+          `Knowledge graph: ${stats.nodes} nodes, ${stats.edges} edges, ${stats.sources} sources, ${stats.topics} topics, ${stats.tags} tags`,
+        );
+      } else if (action === "related") {
         const claimId = args[2];
-        if (!claimId) { print('Usage: silo graph related <claimId>'); process.exit(1); }
+        if (!claimId) {
+          print("Usage: silo graph related <claimId>");
+          process.exit(1);
+        }
         const results = graph.related(claimId, { limit: 20 });
-        if (jsonMode) { print(JSON.stringify(results)); break; }
-        if (results.length === 0) { print('No related claims found.'); break; }
+        if (jsonMode) {
+          print(JSON.stringify(results));
+          break;
+        }
+        if (results.length === 0) {
+          print("No related claims found.");
+          break;
+        }
         print(`${results.length} related claim(s):\n`);
         for (const r of results) {
-          print(`  [${r.claim.id}] (${r.relation}, w=${r.weight}) ${(r.claim.content || '').slice(0, 100)}`);
+          print(
+            `  [${r.claim.id}] (${r.relation}, w=${r.weight}) ${(r.claim.content || "").slice(0, 100)}`,
+          );
           print(`    from: ${r.source}\n`);
         }
-      } else if (action === 'topic') {
-        const topic = args.slice(2).filter(a => !a.startsWith('--')).join(' ');
-        if (!topic) { print('Usage: silo graph topic <topic>'); process.exit(1); }
+      } else if (action === "topic") {
+        const topic = args
+          .slice(2)
+          .filter((a) => !a.startsWith("--"))
+          .join(" ");
+        if (!topic) {
+          print("Usage: silo graph topic <topic>");
+          process.exit(1);
+        }
         const results = graph.byTopic(topic);
-        if (jsonMode) { print(JSON.stringify(results)); break; }
-        if (results.length === 0) { print('No claims found for this topic.'); break; }
+        if (jsonMode) {
+          print(JSON.stringify(results));
+          break;
+        }
+        if (results.length === 0) {
+          print("No claims found for this topic.");
+          break;
+        }
         print(`${results.length} claim(s) for topic "${topic}":\n`);
         for (const r of results) {
-          print(`  [${r.claim.id}] (${r.claim.type}) ${(r.claim.content || '').slice(0, 100)}`);
+          print(
+            `  [${r.claim.id}] (${r.claim.type}) ${(r.claim.content || "").slice(0, 100)}`,
+          );
           print(`    from: ${r.source}\n`);
         }
-      } else if (action === 'clusters') {
-        const clusters = graph.clusters(parseInt(flag('min-size')) || 3);
-        if (jsonMode) { print(JSON.stringify(clusters)); break; }
-        if (clusters.length === 0) { print('No clusters found.'); break; }
+      } else if (action === "clusters") {
+        const clusters = graph.clusters(parseInt(flag("min-size")) || 3);
+        if (jsonMode) {
+          print(JSON.stringify(clusters));
+          break;
+        }
+        if (clusters.length === 0) {
+          print("No clusters found.");
+          break;
+        }
         print(`${clusters.length} cluster(s):\n`);
         for (const c of clusters.slice(0, 20)) {
-          print(`  "${c.topic}" — ${c.claimCount} claims, ${c.edgeCount} edges`);
+          print(
+            `  "${c.topic}" — ${c.claimCount} claims, ${c.edgeCount} edges`,
+          );
         }
-      } else if (action === 'export') {
+      } else if (action === "export") {
         print(JSON.stringify(graph.toJSON(), null, 2));
       } else {
-        print(`Unknown graph action: ${action}. Use: stats, related, topic, clusters, export`);
+        print(
+          `Unknown graph action: ${action}. Use: stats, related, topic, clusters, export`,
+        );
         process.exit(1);
       }
       break;
     }
 
-    case 'serve-mcp': {
-      const serveMcp = require('../lib/serve-mcp.js');
+    case "serve-mcp": {
+      const serveMcp = require("../lib/serve-mcp.js");
       serveMcp.run(process.cwd());
       break;
     }
 
-    case 'serve': {
+    case "serve": {
       // Dynamic import for ESM server module -- use fork() for proper stdio
-      const port = flag('port') || '9095';
-      const root = flag('root') || process.cwd();
+      const port = flag("port") || "9095";
+      const root = flag("root") || process.cwd();
       const serverArgs = [];
-      if (flag('port')) { serverArgs.push('--port', port); }
-      if (flag('root')) { serverArgs.push('--root', root); }
-      const { fork } = require('node:child_process');
-      const path = require('node:path');
-      const serverPath = path.join(__dirname, '..', 'lib', 'server.js');
+      if (flag("port")) {
+        serverArgs.push("--port", port);
+      }
+      if (flag("root")) {
+        serverArgs.push("--root", root);
+      }
+      const { fork } = require("node:child_process");
+      const path = require("node:path");
+      const serverPath = path.join(__dirname, "..", "lib", "server.js");
       const child = fork(serverPath, serverArgs, {
-        stdio: 'inherit',
+        stdio: "inherit",
         env: process.env,
       });
-      child.on('error', (err) => {
+      child.on("error", (err) => {
         process.stderr.write(`silo: error starting server: ${err.message}\n`);
         process.exit(1);
       });
-      child.on('exit', (code) => process.exit(code || 0));
-      process.on('SIGTERM', () => child.kill('SIGTERM'));
-      process.on('SIGINT', () => child.kill('SIGINT'));
+      child.on("exit", (code) => process.exit(code || 0));
+      process.on("SIGTERM", () => child.kill("SIGTERM"));
+      process.on("SIGINT", () => child.kill("SIGINT"));
       break;
     }
 
-    case 'help':
-    case '--help':
-    case '-h':
+    case "help":
+    case "--help":
+    case "-h":
     case undefined:
       usage();
       break;
