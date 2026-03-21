@@ -21,6 +21,7 @@ const { Search } = require('../lib/search.js');
 const { ImportExport } = require('../lib/import-export.js');
 const { Templates } = require('../lib/templates.js');
 const { Packs } = require('../lib/packs.js');
+const { Graph } = require('../lib/graph.js');
 
 // ── --version / -v (before verbose check) ──
 if (process.argv.includes('--version') || (process.argv.includes('-v') && process.argv.length === 3)) {
@@ -86,6 +87,7 @@ Commands:
   packs                             List available knowledge packs
   templates                         List available sprint templates
   install <file>                    Install a pack from a file
+  graph [stats|related|topic|clusters|export]  Knowledge graph operations
   analyze                            Run cross-library analytics (requires harvest)
   serve [--port 9095]               Start the knowledge browser UI
   serve-mcp                         Start the MCP server on stdio
@@ -275,6 +277,53 @@ try {
         } else {
           print(`${key}: ${value}`);
         }
+      }
+      break;
+    }
+
+    case 'graph': {
+      const graph = new Graph(store);
+      const action = args[1] || 'stats';
+      const stats = graph.build();
+
+      if (action === 'stats') {
+        if (jsonMode) { print(JSON.stringify(stats)); break; }
+        print(`Knowledge graph: ${stats.nodes} nodes, ${stats.edges} edges, ${stats.sources} sources, ${stats.topics} topics, ${stats.tags} tags`);
+      } else if (action === 'related') {
+        const claimId = args[2];
+        if (!claimId) { print('Usage: silo graph related <claimId>'); process.exit(1); }
+        const results = graph.related(claimId, { limit: 20 });
+        if (jsonMode) { print(JSON.stringify(results)); break; }
+        if (results.length === 0) { print('No related claims found.'); break; }
+        print(`${results.length} related claim(s):\n`);
+        for (const r of results) {
+          print(`  [${r.claim.id}] (${r.relation}, w=${r.weight}) ${(r.claim.content || '').slice(0, 100)}`);
+          print(`    from: ${r.source}\n`);
+        }
+      } else if (action === 'topic') {
+        const topic = args.slice(2).filter(a => !a.startsWith('--')).join(' ');
+        if (!topic) { print('Usage: silo graph topic <topic>'); process.exit(1); }
+        const results = graph.byTopic(topic);
+        if (jsonMode) { print(JSON.stringify(results)); break; }
+        if (results.length === 0) { print('No claims found for this topic.'); break; }
+        print(`${results.length} claim(s) for topic "${topic}":\n`);
+        for (const r of results) {
+          print(`  [${r.claim.id}] (${r.claim.type}) ${(r.claim.content || '').slice(0, 100)}`);
+          print(`    from: ${r.source}\n`);
+        }
+      } else if (action === 'clusters') {
+        const clusters = graph.clusters(parseInt(flag('min-size')) || 3);
+        if (jsonMode) { print(JSON.stringify(clusters)); break; }
+        if (clusters.length === 0) { print('No clusters found.'); break; }
+        print(`${clusters.length} cluster(s):\n`);
+        for (const c of clusters.slice(0, 20)) {
+          print(`  "${c.topic}" — ${c.claimCount} claims, ${c.edgeCount} edges`);
+        }
+      } else if (action === 'export') {
+        print(JSON.stringify(graph.toJSON(), null, 2));
+      } else {
+        print(`Unknown graph action: ${action}. Use: stats, related, topic, clusters, export`);
+        process.exit(1);
       }
       break;
     }

@@ -17,6 +17,8 @@ const { Search } = require('../lib/search.js');
 const { ImportExport } = require('../lib/import-export.js');
 const { Templates } = require('../lib/templates.js');
 const { Packs } = require('../lib/packs.js');
+const { Graph } = require('../lib/graph.js');
+const { Confluence } = require('../lib/confluence.js');
 
 const TEST_DIR = path.join(os.tmpdir(), `silo-test-${Date.now()}`);
 
@@ -253,6 +255,230 @@ describe('Packs', () => {
   });
 });
 
+describe('Graph', () => {
+  let store, graphIndex;
+  before(() => {
+    store = new Store(path.join(TEST_DIR, 'silo-graph')).init();
+    store.storeClaims('sprint-a', [
+      { id: 'a001', type: 'constraint', topic: 'encryption', content: 'Must use AES-256', tags: ['security', 'encryption'] },
+      { id: 'a002', type: 'risk', topic: 'encryption', content: 'Key rotation may cause downtime', tags: ['security', 'encryption'], conflicts_with: [] },
+      { id: 'a003', type: 'factual', topic: 'performance', content: 'P99 latency is 200ms', tags: ['performance'] },
+    ]);
+    store.storeClaims('sprint-b', [
+      { id: 'b001', type: 'constraint', topic: 'encryption', content: 'TLS 1.3 required for transit', tags: ['security', 'encryption', 'tls'] },
+      { id: 'b002', type: 'recommendation', topic: 'caching', content: 'Use Redis for session cache', tags: ['performance', 'caching'] },
+    ]);
+    graphIndex = new Graph(store);
+  });
+
+  it('builds graph and reports stats', () => {
+    const stats = graphIndex.build();
+    assert.ok(stats.nodes >= 5);
+    assert.ok(stats.edges > 0);
+    assert.ok(stats.topics >= 2);
+    assert.ok(stats.sources >= 2);
+  });
+
+  it('finds related claims by topic', () => {
+    const results = graphIndex.byTopic('encryption');
+    assert.ok(results.length >= 3);
+    assert.ok(results.every(r => r.claim.topic.includes('encryption')));
+  });
+
+  it('finds related claims by tag', () => {
+    const results = graphIndex.byTag('security');
+    assert.ok(results.length >= 3);
+  });
+
+  it('finds neighbors via related()', () => {
+    // a001 and b001 share topic 'encryption' — should be related
+    const results = graphIndex.related('sprint-a:a001');
+    assert.ok(results.length >= 1);
+    assert.ok(results.some(r => r.relation === 'same-topic' || r.relation === 'shared-tag'));
+  });
+
+  it('finds clusters', () => {
+    const clusters = graphIndex.clusters(2);
+    assert.ok(clusters.length >= 1);
+    assert.ok(clusters[0].claimCount >= 2);
+  });
+
+  it('exports as JSON', () => {
+    const json = graphIndex.toJSON();
+    assert.ok(json.nodes.length >= 5);
+    assert.ok(json.edges.length > 0);
+    assert.ok(json.stats);
+    assert.ok(json.builtAt);
+  });
+
+  it('searches for prior art across sprints', () => {
+    const results = graphIndex.search('encryption security');
+    assert.ok(results.length >= 2);
+    assert.ok(results[0].score >= results[1].score, 'results should be sorted by score');
+    assert.ok(results[0].textScore > 0);
+    assert.ok(results.every(r => r.source && r.sourceType));
+  });
+
+  it('search returns empty for no matches', () => {
+    const results = graphIndex.search('quantum blockchain');
+    assert.equal(results.length, 0);
+  });
+
+  it('search filters by type', () => {
+    const results = graphIndex.search('encryption', { type: 'constraint' });
+    assert.ok(results.length >= 1);
+    assert.ok(results.every(r => r.claim.type === 'constraint'));
+  });
+
+  it('search filters by sourceType', () => {
+    const results = graphIndex.search('encryption', { sourceType: 'collection' });
+    assert.ok(results.length >= 1);
+    assert.ok(results.every(r => r.sourceType === 'collection'));
+  });
+});
+
+describe('Confluence', () => {
+  it('reports unconfigured when no env vars set', () => {
+    const c = new Confluence();
+    assert.equal(c.isConfigured(), false);
+  });
+
+  it('reports configured with explicit opts', () => {
+    const c = new Confluence({ baseUrl: 'https://test.atlassian.net/wiki', token: 'tok', email: 'a@b.com' });
+    assert.equal(c.isConfigured(), true);
+  });
+
+  it('throws on publish when not configured', async () => {
+    const c = new Confluence();
+    await assert.rejects(() => c.publish('Test', []), /not configured/);
+  });
+
+  it('generates and parses Confluence storage format', () => {
+    const c = new Confluence({ baseUrl: 'https://test.atlassian.net/wiki', token: 'tok', email: 'a@b.com' });
+    const claims = [
+      { id: 'c001', type: 'constraint', topic: 'encryption', content: 'Must use AES-256', evidence: 'documented', source: { origin: 'regulation', artifact: null, connector: null }, tags: ['security'] },
+      { id: 'c002', type: 'risk', topic: 'latency', content: 'P99 may spike > 500ms', evidence: 'web', source: { origin: 'research', artifact: null, connector: null }, tags: ['performance', 'sla'] },
+    ];
+    const html = c._claimsToStorageFormat('Test Pack', claims);
+    assert.ok(html.includes('Must use AES-256'));
+    assert.ok(html.includes('silo-meta'));
+
+    const parsed = c._parseStorageFormat(html);
+    assert.equal(parsed.length, 2);
+    assert.equal(parsed[0].id, 'c001');
+    assert.equal(parsed[0].content, 'Must use AES-256');
+    assert.equal(parsed[0].evidence, 'documented');
+    assert.equal(parsed[1].type, 'risk');
+    assert.ok(parsed[1].tags.includes('performance'));
+  });
+});
+
+describe('Enterprise Packs', () => {
+  let packsMgr;
+  before(() => {
+    const store = new Store(path.join(TEST_DIR, 'silo-ent-packs')).init();
+    packsMgr = new Packs(store);
+  });
+
+  it('includes vendor-eval pack', () => {
+    const pack = packsMgr.get('vendor-eval');
+    assert.ok(pack);
+    assert.ok(pack.claims.length >= 10);
+    assert.equal(pack.name, 'Vendor Evaluation Framework');
+  });
+
+  it('includes adr pack', () => {
+    const pack = packsMgr.get('adr');
+    assert.ok(pack);
+    assert.ok(pack.claims.length >= 10);
+    assert.equal(pack.name, 'Architecture Decision Records');
+  });
+
+  it('includes hackathon category packs', () => {
+    const ids = ['hackathon-most-rigorous', 'hackathon-most-innovative', 'hackathon-business-impact', 'hackathon-best-ai'];
+    for (const id of ids) {
+      const pack = packsMgr.get(id);
+      assert.ok(pack, `Pack ${id} not found`);
+      assert.ok(pack.claims.length >= 8, `Pack ${id} has fewer than 8 claims`);
+    }
+  });
+
+  it('all pack claims have wheat-canonical schema', () => {
+    const ids = ['vendor-eval', 'adr', 'hackathon-most-rigorous', 'hackathon-best-ai'];
+    for (const id of ids) {
+      const pack = packsMgr.get(id);
+      for (const c of pack.claims) {
+        assert.ok(c.id, `${id}: claim missing id`);
+        assert.ok(c.type, `${id}: claim ${c.id} missing type`);
+        assert.ok(c.content, `${id}: claim ${c.id} missing content`);
+        assert.ok(c.evidence, `${id}: claim ${c.id} missing evidence`);
+        assert.ok(c.tags, `${id}: claim ${c.id} missing tags`);
+        assert.ok(typeof c.source === 'object', `${id}: claim ${c.id} source should be object`);
+      }
+    }
+  });
+
+  it('includes vendor-evaluation enterprise pack', () => {
+    const pack = packsMgr.get('vendor-evaluation');
+    assert.ok(pack);
+    assert.ok(pack.claims.length >= 8);
+    assert.equal(pack.name, 'Vendor Evaluation (Enterprise)');
+  });
+
+  it('includes architecture-decision enterprise pack', () => {
+    const pack = packsMgr.get('architecture-decision');
+    assert.ok(pack);
+    assert.ok(pack.claims.length >= 8);
+    assert.equal(pack.name, 'Architecture Decision (Enterprise)');
+  });
+
+  it('includes incident-postmortem pack', () => {
+    const pack = packsMgr.get('incident-postmortem');
+    assert.ok(pack);
+    assert.ok(pack.claims.length >= 10);
+    assert.equal(pack.name, 'Incident Postmortem');
+    // Should cover key postmortem topics
+    const topics = pack.claims.map(c => c.topic);
+    assert.ok(topics.some(t => t.includes('root cause')));
+    assert.ok(topics.some(t => t.includes('action items')));
+  });
+
+  it('includes hackathon-sprint-boost pack with correct weights', () => {
+    const pack = packsMgr.get('hackathon-sprint-boost');
+    assert.ok(pack);
+    assert.ok(pack.judging);
+    assert.equal(pack.judging.weights.impact, 0.40);
+    assert.equal(pack.judging.weights.rigor, 0.30);
+    assert.equal(pack.judging.weights.creativity, 0.30);
+  });
+
+  it('includes hackathon-innovation pack with correct weights', () => {
+    const pack = packsMgr.get('hackathon-innovation');
+    assert.ok(pack);
+    assert.ok(pack.judging);
+    assert.equal(pack.judging.weights.creativity, 0.30);
+    assert.equal(pack.judging.weights.novelty, 0.25);
+    assert.equal(pack.judging.weights.evidence, 0.25);
+    assert.equal(pack.judging.weights.feasibility, 0.20);
+  });
+
+  it('new enterprise pack claims have wheat-canonical schema', () => {
+    const ids = ['vendor-evaluation', 'architecture-decision', 'incident-postmortem', 'hackathon-sprint-boost', 'hackathon-innovation'];
+    for (const id of ids) {
+      const pack = packsMgr.get(id);
+      assert.ok(pack, `Pack ${id} not found`);
+      for (const c of pack.claims) {
+        assert.ok(c.id, `${id}: claim missing id`);
+        assert.ok(c.type, `${id}: claim ${c.id} missing type`);
+        assert.ok(c.content, `${id}: claim ${c.id} missing content`);
+        assert.ok(c.evidence, `${id}: claim ${c.id} missing evidence`);
+        assert.ok(c.tags, `${id}: claim ${c.id} missing tags`);
+        assert.ok(typeof c.source === 'object', `${id}: claim ${c.id} source should be object`);
+      }
+    }
+  });
+});
+
 describe('CLI', () => {
   const cli = path.join(__dirname, '..', 'bin', 'silo.js');
 
@@ -261,11 +487,15 @@ describe('CLI', () => {
     assert.ok(output.includes('reusable knowledge'));
   });
 
-  it('lists packs', () => {
+  it('lists packs including new enterprise and hackathon packs', () => {
     const output = execFileSync('node', [cli, 'packs'], { encoding: 'utf-8' });
     assert.ok(output.includes('compliance'));
     assert.ok(output.includes('migration'));
     assert.ok(output.includes('architecture'));
+    assert.ok(output.includes('vendor-eval'));
+    assert.ok(output.includes('adr'));
+    assert.ok(output.includes('hackathon-most-rigorous'));
+    assert.ok(output.includes('hackathon-best-ai'));
   });
 
   it('pulls compliance pack into a file', () => {
@@ -275,5 +505,20 @@ describe('CLI', () => {
     assert.ok(output.includes('Imported'));
     const claims = JSON.parse(fs.readFileSync(target, 'utf-8'));
     assert.ok(claims.length > 0);
+  });
+
+  it('runs graph stats command', () => {
+    const output = execFileSync('node', [cli, 'graph', 'stats'], { encoding: 'utf-8' });
+    assert.ok(output.includes('nodes'));
+    assert.ok(output.includes('edges'));
+  });
+
+  it('pulls vendor-eval pack into a file', () => {
+    const target = path.join(TEST_DIR, 'cli-vendor-target.json');
+    fs.writeFileSync(target, '[]');
+    const output = execFileSync('node', [cli, 'pull', 'vendor-eval', '--into', target], { encoding: 'utf-8' });
+    assert.ok(output.includes('Imported'));
+    const claims = JSON.parse(fs.readFileSync(target, 'utf-8'));
+    assert.ok(claims.length >= 10);
   });
 });
