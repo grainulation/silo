@@ -24,19 +24,19 @@ npm install -g @grainulation/silo
 
 11 knowledge packs with 131 curated claims:
 
-| Pack | Claims | What's inside |
-|------|--------|---------------|
-| `api-design` | 13 | REST conventions, versioning, pagination, error formats, GraphQL tradeoffs |
-| `architecture` | 12 | Monolith vs micro, build vs buy, SQL vs NoSQL decision claims |
-| `ci-cd` | 12 | CI/CD pipeline patterns, caching, rollback strategies |
-| `compliance` | 14 | HIPAA, SOC 2, GDPR constraint sets with regulatory citations |
-| `data-engineering` | 12 | ETL patterns, data quality, warehouse design |
-| `frontend` | 12 | Frontend architecture, performance, accessibility patterns |
-| `migration` | 10 | Database/cloud/framework migration risks and patterns |
-| `observability` | 12 | Logging, metrics, tracing, alerting patterns |
-| `security` | 12 | Security constraints, threat models, authentication patterns |
-| `team-process` | 12 | Team workflow, code review, incident response patterns |
-| `testing` | 10 | Testing strategies, coverage, test architecture |
+| Pack               | Claims | What's inside                                                              |
+| ------------------ | ------ | -------------------------------------------------------------------------- |
+| `api-design`       | 13     | REST conventions, versioning, pagination, error formats, GraphQL tradeoffs |
+| `architecture`     | 12     | Monolith vs micro, build vs buy, SQL vs NoSQL decision claims              |
+| `ci-cd`            | 12     | CI/CD pipeline patterns, caching, rollback strategies                      |
+| `compliance`       | 14     | HIPAA, SOC 2, GDPR constraint sets with regulatory citations               |
+| `data-engineering` | 12     | ETL patterns, data quality, warehouse design                               |
+| `frontend`         | 12     | Frontend architecture, performance, accessibility patterns                 |
+| `migration`        | 10     | Database/cloud/framework migration risks and patterns                      |
+| `observability`    | 12     | Logging, metrics, tracing, alerting patterns                               |
+| `security`         | 12     | Security constraints, threat models, authentication patterns               |
+| `team-process`     | 12     | Team workflow, code review, incident response patterns                     |
+| `testing`          | 10     | Testing strategies, coverage, test architecture                            |
 
 ## Quick start
 
@@ -62,15 +62,15 @@ silo list
 
 ## CLI
 
-| Command | Description |
-|---------|-------------|
-| `silo list` | List all stored collections |
-| `silo pull <pack> --into <file>` | Pull claims into a claims file |
-| `silo store <name> --from <file>` | Store claims from a sprint |
-| `silo search <query>` | Full-text search across claims |
-| `silo packs` | List available knowledge packs |
-| `silo publish <name> --collections <ids>` | Bundle collections into a pack |
-| `silo install <file>` | Install a pack from a JSON file |
+| Command                                   | Description                     |
+| ----------------------------------------- | ------------------------------- |
+| `silo list`                               | List all stored collections     |
+| `silo pull <pack> --into <file>`          | Pull claims into a claims file  |
+| `silo store <name> --from <file>`         | Store claims from a sprint      |
+| `silo search <query>`                     | Full-text search across claims  |
+| `silo packs`                              | List available knowledge packs  |
+| `silo publish <name> --collections <ids>` | Bundle collections into a pack  |
+| `silo install <file>`                     | Install a pack from a JSON file |
 
 ## How it works
 
@@ -83,17 +83,17 @@ When you `store`, Silo hashes the content for versioning, saves to `~/.silo/clai
 ## Programmatic API
 
 ```js
-const { Store } = require('@grainulation/silo/lib/store');
-const { Search } = require('@grainulation/silo/lib/search');
-const { ImportExport } = require('@grainulation/silo/lib/import-export');
+const { Store } = require("@grainulation/silo/lib/store");
+const { Search } = require("@grainulation/silo/lib/search");
+const { ImportExport } = require("@grainulation/silo/lib/import-export");
 
 const store = new Store().init();
 const search = new Search(store);
 const io = new ImportExport(store);
 
-const results = search.query('encryption', { type: 'constraint' });
-io.pull('compliance', './claims.json');
-io.push('./claims.json', 'my-sprint-findings');
+const results = search.query("encryption", { type: "constraint" });
+io.pull("compliance", "./claims.json");
+io.push("./claims.json", "my-sprint-findings");
 ```
 
 ## Zero dependencies
@@ -102,16 +102,16 @@ Node built-in modules only. Filesystem-based storage. Works offline.
 
 ## Part of the grainulation ecosystem
 
-| Tool | Role |
-|------|------|
-| [wheat](https://github.com/grainulation/wheat) | Research engine -- grow structured evidence |
-| [farmer](https://github.com/grainulation/farmer) | Permission dashboard -- approve AI actions in real time |
-| [barn](https://github.com/grainulation/barn) | Shared tools -- templates, validators, sprint detection |
-| [mill](https://github.com/grainulation/mill) | Format conversion -- export to PDF, CSV, slides, 24 formats |
-| **silo** | Knowledge storage -- reusable claim libraries and packs |
-| [harvest](https://github.com/grainulation/harvest) | Analytics -- cross-sprint patterns and prediction scoring |
-| [orchard](https://github.com/grainulation/orchard) | Orchestration -- multi-sprint coordination and dependencies |
-| [grainulation](https://github.com/grainulation/grainulation) | Unified CLI -- single entry point to the ecosystem |
+| Tool                                                         | Role                                                        |
+| ------------------------------------------------------------ | ----------------------------------------------------------- |
+| [wheat](https://github.com/grainulation/wheat)               | Research engine -- grow structured evidence                 |
+| [farmer](https://github.com/grainulation/farmer)             | Permission dashboard -- approve AI actions in real time     |
+| [barn](https://github.com/grainulation/barn)                 | Shared tools -- templates, validators, sprint detection     |
+| [mill](https://github.com/grainulation/mill)                 | Format conversion -- export to PDF, CSV, slides, 24 formats |
+| **silo**                                                     | Knowledge storage -- reusable claim libraries and packs     |
+| [harvest](https://github.com/grainulation/harvest)           | Analytics -- cross-sprint patterns and prediction scoring   |
+| [orchard](https://github.com/grainulation/orchard)           | Orchestration -- multi-sprint coordination and dependencies |
+| [grainulation](https://github.com/grainulation/grainulation) | Unified CLI -- single entry point to the ecosystem          |
 
 ## License
 

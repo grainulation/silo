@@ -4,31 +4,31 @@
   "version": "1.0.0",
   "judging": {
     "weights": {
-      "creativity": 0.30,
+      "creativity": 0.3,
       "novelty": 0.25,
       "evidence": 0.25,
-      "feasibility": 0.20
+      "feasibility": 0.2
     },
     "auto_score_dimensions": {
       "creativity": {
         "type_diversity": 0.35,
-        "recommendation_ratio": 0.30,
+        "recommendation_ratio": 0.3,
         "cross_topic_breadth": 0.35
       },
       "novelty": {
-        "challenge_depth": 0.40,
-        "tag_diversity": 0.30,
-        "recommendation_ratio": 0.30
+        "challenge_depth": 0.4,
+        "tag_diversity": 0.3,
+        "recommendation_ratio": 0.3
       },
       "evidence": {
-        "evidence_tier": 0.50,
-        "corroboration": 0.30,
-        "health": 0.20
+        "evidence_tier": 0.5,
+        "corroboration": 0.3,
+        "health": 0.2
       },
       "feasibility": {
-        "constraint_satisfaction": 0.40,
-        "estimate_claims_present": 0.30,
-        "risk_claims_present": 0.30
+        "constraint_satisfaction": 0.4,
+        "estimate_claims_present": 0.3,
+        "risk_claims_present": 0.3
       }
     },
     "human_score_dimensions": [
@@ -37,8 +37,8 @@
       "practical_creativity"
     ],
     "final_blend": {
-      "auto": 0.50,
-      "human": 0.50
+      "auto": 0.5,
+      "human": 0.5
     }
   },
   "claims": [
@@ -47,7 +47,11 @@
       "type": "constraint",
       "topic": "innovation night format",
       "content": "Innovation Night is an open-ended creative hackathon format. Teams choose from themed challenge packs or propose their own research question. Output is a 3-minute demo pitch backed by a compiled wheat brief. The format rewards divergent thinking and cross-domain synthesis.",
-      "source": { "origin": "stakeholder", "artifact": null, "connector": null },
+      "source": {
+        "origin": "stakeholder",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "stated",
       "status": "active",
       "phase_added": "define",
@@ -61,7 +65,11 @@
       "type": "constraint",
       "topic": "creativity scoring",
       "content": "Creativity is the dominant judging dimension at 30%. Scored across: (1) Type diversity — exploring problems from multiple angles (constraints, risks, estimates, recommendations). (2) Recommendation originality — actionable insights that propose novel combinations. (3) Cross-topic breadth — drawing from diverse knowledge domains to synthesize new understanding.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -75,7 +83,11 @@
       "type": "constraint",
       "topic": "novelty scoring",
       "content": "Novelty is weighted at 25%. Scored across: (1) Challenge depth — questioning assumptions and resolving conflicting evidence. (2) Tag diversity — exploring across many distinct knowledge areas. (3) Recommendation ratio — generating original actionable insights rather than just collecting facts.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -89,7 +101,11 @@
       "type": "constraint",
       "topic": "evidence scoring",
       "content": "Evidence quality is weighted at 25%. Even creative ideas need grounding. Scored across: (1) Evidence tier distribution — higher tiers show the team validated their creative ideas. (2) Corroboration — cross-referencing diverse sources is a hallmark of innovative research. (3) Health — clean compilation despite creative exploration.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -103,7 +119,11 @@
       "type": "constraint",
       "topic": "feasibility scoring",
       "content": "Feasibility is weighted at 20%. Creative ideas must be implementable. Scored across: (1) Constraint satisfaction — does the sprint acknowledge real-world constraints? (2) Estimate claims — are there cost, timeline, or effort projections? (3) Risk claims — has the team considered what could go wrong?",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -131,7 +151,11 @@
       "type": "recommendation",
       "topic": "hybrid voting",
       "content": "Innovation Night uses hybrid voting: peer voting for 'People's Choice' plus judge panel for category awards. Peer voting increases engagement among non-participants. Categories: Overall Popular Vote, Most Creative, Best Use of AI, Most Likely to Be Implemented.",
-      "source": { "origin": "research", "artifact": "https://info.devpost.com/blog/private-hackathon-voting", "connector": null },
+      "source": {
+        "origin": "research",
+        "artifact": "https://info.devpost.com/blog/private-hackathon-voting",
+        "connector": null
+      },
       "evidence": "web",
       "status": "active",
       "phase_added": "research",

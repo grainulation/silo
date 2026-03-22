@@ -8,7 +8,11 @@
       "type": "constraint",
       "topic": "AI leverage scoring",
       "content": "AI leverage sub-score = (claims_from_ai_assisted_research / total_claims) * quality_multiplier. Quality multiplier = average evidence tier of AI-assisted claims. Weight: 30%. Rewards using AI for deep research, not shallow claim generation.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -22,7 +26,11 @@
       "type": "constraint",
       "topic": "evidence tier scoring",
       "content": "Evidence tier sub-score uses weighted sum normalized to 0-100. Weight: 20%. AI-assisted claims should produce higher evidence tiers — web and documented, not just stated.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -36,7 +44,11 @@
       "type": "constraint",
       "topic": "type diversity scoring",
       "content": "Type diversity sub-score = (distinct_types / 6) * 100. Weight: 20%. Best AI use means leveraging AI for diverse research outputs — not just generating a list of facts.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -50,7 +62,11 @@
       "type": "constraint",
       "topic": "corroboration scoring",
       "content": "Corroboration sub-score = witnessed_claims / total_claims * 100. Weight: 15%. AI can find cross-references humans miss — high corroboration signals effective AI-human collaboration.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -64,7 +80,11 @@
       "type": "constraint",
       "topic": "challenge depth scoring",
       "content": "Challenge depth sub-score = (challenge_claims + resolved_conflicts) / total_claims * 100. Weight: 15%. Best AI use includes AI-assisted devil's advocate — challenging claims and finding counter-evidence.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -78,7 +98,11 @@
       "type": "recommendation",
       "topic": "AI collaboration patterns",
       "content": "Effective AI research patterns: (1) AI finds sources, human validates and elevates evidence tier. (2) AI generates initial claims, human challenges and refines. (3) AI identifies conflicts between sources, human resolves. (4) AI drafts recommendations, human grounds in business context.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "stated",
       "status": "active",
       "phase_added": "define",
@@ -106,7 +130,11 @@
       "type": "recommendation",
       "topic": "MCP connector usage",
       "content": "Best AI use should leverage MCP connectors: web search for real-time data, GitHub for code context, Confluence/Jira for organizational knowledge. Connector diversity signals sophisticated AI orchestration.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "stated",
       "status": "active",
       "phase_added": "define",
@@ -134,7 +162,11 @@
       "type": "factual",
       "topic": "HackEval precedent",
       "content": "HackEval keeps AI as assistant, not decision-maker: structured rubrics with blind scoring to reduce bias, but final decisions remain human. AI Judge (Devpost) takes the opposite approach with full automation. The wheat hackathon model should be the middle ground.",
-      "source": { "origin": "research", "artifact": "https://www.scribd.com/document/973181548/HackEval-Full-Pitch", "connector": null },
+      "source": {
+        "origin": "research",
+        "artifact": "https://www.scribd.com/document/973181548/HackEval-Full-Pitch",
+        "connector": null
+      },
       "evidence": "web",
       "status": "active",
       "phase_added": "research",

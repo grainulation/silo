@@ -8,21 +8,34 @@
       "type": "constraint",
       "topic": "constraint satisfaction scoring",
       "content": "Constraint satisfaction sub-score = (constraint_claims_with_evidence / total_constraint_claims) * 100. Weight: 30% — the dominant factor. Business impact requires understanding real constraints, not hypothetical ones.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
       "timestamp": "2026-01-01T00:00:00.000Z",
       "conflicts_with": [],
       "resolved_by": null,
-      "tags": ["hackathon", "scoring", "constraint-satisfaction", "business-impact"]
+      "tags": [
+        "hackathon",
+        "scoring",
+        "constraint-satisfaction",
+        "business-impact"
+      ]
     },
     {
       "id": "hbiz-002",
       "type": "constraint",
       "topic": "evidence tier scoring",
       "content": "Evidence tier sub-score uses weighted sum normalized to 0-100. Weight: 25%. Business decisions need strong evidence — 'we tested it' beats 'someone blogged about it'.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -36,7 +49,11 @@
       "type": "constraint",
       "topic": "corroboration scoring",
       "content": "Corroboration sub-score = witnessed_claims / total_claims * 100. Weight: 20%. Business decisions carry more weight when findings are corroborated by multiple independent sources.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -50,7 +67,11 @@
       "type": "constraint",
       "topic": "type diversity scoring",
       "content": "Type diversity sub-score = (distinct_types / 6) * 100. Weight: 15%. Business-impactful research uses estimates (cost, timeline), risks, and constraints — not just facts.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -64,7 +85,11 @@
       "type": "constraint",
       "topic": "health scoring",
       "content": "Health sub-score = max(0, (1 - warnings/total_claims) * 100). Weight: 10%. A clean compilation signals thoroughness — important when research informs business decisions.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -78,7 +103,11 @@
       "type": "recommendation",
       "topic": "business impact signals",
       "content": "Signals of business impact: (1) estimate claims with cost/timeline numbers, (2) constraint claims tied to real stakeholder requirements, (3) risk claims with mitigation strategies, (4) recommendations with clear ROI framing.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "stated",
       "status": "active",
       "phase_added": "define",
@@ -134,7 +163,11 @@
       "type": "factual",
       "topic": "WildHacks normalization",
       "content": "WildHacks (Northwestern) dual-normalization: adjusts for judge leniency and project quality variance. Raw scores scaled to 100, then normalized per-judge. Gold standard for fair multi-judge hackathon scoring.",
-      "source": { "origin": "research", "artifact": "https://guide.wildhacks.net/judging-and-awards/scoring-formula/", "connector": null },
+      "source": {
+        "origin": "research",
+        "artifact": "https://guide.wildhacks.net/judging-and-awards/scoring-formula/",
+        "connector": null
+      },
       "evidence": "web",
       "status": "active",
       "phase_added": "research",

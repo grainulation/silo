@@ -8,7 +8,11 @@
       "type": "constraint",
       "topic": "evidence tier scoring",
       "content": "Evidence tier sub-score uses weighted sum: production=5, tested=4, documented=3, web=2, stated=1, normalized to 0-100. This is the dominant factor (35% weight) in the Most Rigorous category.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -22,7 +26,11 @@
       "type": "constraint",
       "topic": "challenge depth scoring",
       "content": "Challenge depth sub-score = (challenge_claims + resolved_conflicts) / total_claims * 100. Weight: 25%. Rewards sprints that actively question and resolve competing claims rather than building one-sided arguments.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -36,7 +44,11 @@
       "type": "constraint",
       "topic": "corroboration scoring",
       "content": "Corroboration sub-score = witnessed_claims / total_claims * 100. Weight: 20%. Claims backed by external sources (web evidence, documented references) score higher than unsupported assertions.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -50,7 +62,11 @@
       "type": "constraint",
       "topic": "health scoring",
       "content": "Health sub-score = max(0, (1 - warnings/total_claims) * 100). Weight: 10%. Penalizes sprints with compiler warnings — low-evidence claims, missing fields, unresolved conflicts.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -64,7 +80,11 @@
       "type": "constraint",
       "topic": "type diversity scoring",
       "content": "Type diversity sub-score = (distinct_types / 6) * 100. Weight: 10%. Ensures sprints use the full taxonomy (constraint, factual, estimate, risk, recommendation, feedback) rather than only one type.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -78,7 +98,11 @@
       "type": "recommendation",
       "topic": "anti-gaming logarithmic scaling",
       "content": "Apply logarithmic scaling to claim counts: score = log(claim_count) not linear. This prevents gaming through claim spam — 100 weak claims score only marginally better than 10 strong ones.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -92,7 +116,11 @@
       "type": "risk",
       "topic": "Goodhart's Law gaming",
       "content": "If teams know the exact scoring weights, they optimize for metrics over substance (Goodhart's Law). Keep exact weights secret; publish only the dimensions. Rotate weights per hackathon event.",
-      "source": { "origin": "research", "artifact": "https://en.wikipedia.org/wiki/Goodhart's_law", "connector": null },
+      "source": {
+        "origin": "research",
+        "artifact": "https://en.wikipedia.org/wiki/Goodhart's_law",
+        "connector": null
+      },
       "evidence": "web",
       "status": "active",
       "phase_added": "research",
@@ -134,7 +162,11 @@
       "type": "constraint",
       "topic": "evidence tier floor",
       "content": "Claims below 'web' evidence tier count at 50% weight. This prevents gaming by adding many low-effort 'stated' claims. Encourages teams to back assertions with real sources.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",

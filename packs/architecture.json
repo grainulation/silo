@@ -8,7 +8,11 @@
       "type": "constraint",
       "topic": "microservices operational overhead",
       "content": "Microservices add operational overhead proportional to service count: each service needs its own CI/CD pipeline, monitoring, alerting, and on-call rotation. Below ~10 engineers, this cost often exceeds the benefit.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -22,7 +26,11 @@
       "type": "risk",
       "topic": "distributed transaction complexity",
       "content": "Distributed transactions across microservices require saga patterns or two-phase commit. Both add complexity and failure modes that don't exist in a monolith.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -36,7 +44,11 @@
       "type": "factual",
       "topic": "event-driven eventual consistency",
       "content": "Event-driven architectures decouple producers from consumers but introduce eventual consistency. Any user-facing flow that requires strong consistency must use synchronous calls or compensating transactions.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -50,7 +62,11 @@
       "type": "recommendation",
       "topic": "modular monolith first",
       "content": "Start with a modular monolith (clear module boundaries, separate data access per module) and extract services only when a module has a distinct scaling, deployment, or team-ownership need.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -78,7 +94,11 @@
       "type": "constraint",
       "topic": "SQL vs NoSQL decision criteria",
       "content": "SQL databases provide ACID transactions and are the correct default for structured data with relationships. NoSQL is justified when: (a) schema is truly unpredictable, (b) horizontal write scaling is required, or (c) access patterns are pure key-value.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -106,7 +126,11 @@
       "type": "risk",
       "topic": "shared database coupling",
       "content": "Shared databases between services create hidden coupling. Schema changes in one service break others. Each service should own its data store, exposing data only through APIs.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -134,7 +158,11 @@
       "type": "constraint",
       "topic": "per-client rate limiting",
       "content": "API gateway rate limiting must be set per client, not globally. Global limits allow a single misbehaving client to consume the entire quota. Use token bucket or sliding window algorithms.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -148,7 +176,11 @@
       "type": "recommendation",
       "topic": "circuit breaker pattern",
       "content": "Circuit breakers (open after N failures, half-open after timeout, close after success) prevent cascade failures. Every synchronous cross-service call should have a circuit breaker with configurable thresholds.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -162,7 +194,11 @@
       "type": "factual",
       "topic": "p99 latency over average",
       "content": "Latency at the 99th percentile (p99) matters more than average latency for user experience. A system with 50ms average but 2s p99 feels worse than one with 100ms average and 200ms p99.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",

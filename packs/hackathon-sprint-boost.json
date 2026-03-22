@@ -4,26 +4,26 @@
   "version": "1.0.0",
   "judging": {
     "weights": {
-      "impact": 0.40,
-      "rigor": 0.30,
-      "creativity": 0.30
+      "impact": 0.4,
+      "rigor": 0.3,
+      "creativity": 0.3
     },
     "auto_score_dimensions": {
       "impact": {
-        "constraint_satisfaction": 0.40,
-        "evidence_tier": 0.30,
-        "corroboration": 0.30
+        "constraint_satisfaction": 0.4,
+        "evidence_tier": 0.3,
+        "corroboration": 0.3
       },
       "rigor": {
         "evidence_tier": 0.35,
-        "challenge_depth": 0.30,
-        "health": 0.20,
+        "challenge_depth": 0.3,
+        "health": 0.2,
         "corroboration": 0.15
       },
       "creativity": {
         "type_diversity": 0.35,
         "recommendation_ratio": 0.35,
-        "cross_topic_breadth": 0.30
+        "cross_topic_breadth": 0.3
       }
     },
     "human_score_dimensions": [
@@ -32,8 +32,8 @@
       "actionability"
     ],
     "final_blend": {
-      "auto": 0.50,
-      "human": 0.50
+      "auto": 0.5,
+      "human": 0.5
     }
   },
   "claims": [
@@ -42,7 +42,11 @@
       "type": "constraint",
       "topic": "sprint boost format",
       "content": "Sprint Boost is a business-aligned hackathon format. Each team picks a real task from their backlog or a strategic OKR key result, runs a wheat research sprint on it, and submits the compiled brief. The output is a sprint deliverable, not a side project.",
-      "source": { "origin": "stakeholder", "artifact": null, "connector": null },
+      "source": {
+        "origin": "stakeholder",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "stated",
       "status": "active",
       "phase_added": "define",
@@ -56,7 +60,11 @@
       "type": "constraint",
       "topic": "impact scoring",
       "content": "Business impact is the dominant judging dimension at 40%. Scored across: (1) Does the research address a real business constraint? (2) Are findings backed by evidence strong enough to act on? (3) Are claims corroborated by external sources? A sprint that solves a real problem with weak evidence still outscores a polished sprint on a hypothetical problem.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -70,7 +78,11 @@
       "type": "constraint",
       "topic": "rigor scoring",
       "content": "Research rigor is weighted at 30%. Scored across: (1) Evidence tier distribution — higher tiers (tested, production) score exponentially better. (2) Challenge depth — did the team stress-test their own findings? (3) Health — clean compilation with few warnings. (4) Corroboration — external witnesses back up claims.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -84,7 +96,11 @@
       "type": "constraint",
       "topic": "creativity scoring",
       "content": "Creativity is weighted at 30%. Scored across: (1) Type diversity — using multiple claim types shows multi-angle thinking. (2) Recommendation ratio — novel, actionable recommendations signal creative problem-solving. (3) Cross-topic breadth — drawing from diverse domains demonstrates creative synthesis.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -140,7 +156,11 @@
       "type": "factual",
       "topic": "OKR hackathon precedent",
       "content": "The OKR Hackathon is an established corporate format (documented by Devpost) where teams compete to complete OKR goals within a hackathon timebox. Intel ties innovation hackathons directly to strategic OKRs. This validates Sprint Boost: real work, hackathon energy, research-backed output.",
-      "source": { "origin": "research", "artifact": "https://info.devpost.com/blog/8-types-of-internal-hackathons", "connector": null },
+      "source": {
+        "origin": "research",
+        "artifact": "https://info.devpost.com/blog/8-types-of-internal-hackathons",
+        "connector": null
+      },
       "evidence": "web",
       "status": "active",
       "phase_added": "research",

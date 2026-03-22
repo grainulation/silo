@@ -8,14 +8,23 @@
       "type": "constraint",
       "topic": "code review turnaround time",
       "content": "Code reviews should receive first-pass feedback within 4 business hours. Reviews taking longer than 24 hours are the top-cited blocker for developer productivity (Google Developer Survey 2023). Set team norms: reviews under 400 lines get same-day response, larger PRs should be split or paired on.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
       "timestamp": "2025-01-01T00:00:00.000Z",
       "conflicts_with": [],
       "resolved_by": null,
-      "tags": ["team-process", "code-review", "developer-experience", "productivity"]
+      "tags": [
+        "team-process",
+        "code-review",
+        "developer-experience",
+        "productivity"
+      ]
     },
     {
       "id": "team-002",
@@ -36,7 +45,11 @@
       "type": "recommendation",
       "topic": "on-call rotation design",
       "content": "On-call rotations should be 1 week per engineer, with a minimum of 6 people in the rotation (no more than 1 week in 6 on primary). Provide a secondary on-call who shadows. Compensate on-call with either extra pay (10-15% of base for the week) or time off (1 day per week on-call). On-call without compensation breeds resentment and attrition.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "production",
       "status": "active",
       "phase_added": "define",
@@ -50,7 +63,11 @@
       "type": "recommendation",
       "topic": "RFC process for decisions",
       "content": "Use RFCs (Request for Comments) for decisions that are: cross-team, hard to reverse, or affect more than 3 people. RFC template: Context (why now), Proposal (what), Alternatives considered (at least 2), Tradeoffs, Migration plan. Set a review period of 5 business days. Silence is not consent; require explicit approvals from stakeholders. Archive accepted RFCs as ADRs.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -78,7 +95,11 @@
       "type": "factual",
       "topic": "estimation accuracy ranges",
       "content": "Software estimation accuracy follows the Cone of Uncertainty: at project inception, estimates are 0.25x-4x actual. After requirements, 0.5x-2x. After detailed design, 0.67x-1.5x. After code complete, 0.9x-1.1x. Communicate estimates as ranges, never single points. Use relative sizing (story points) for prioritization and historical velocity for date forecasting.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -92,21 +113,34 @@
       "type": "recommendation",
       "topic": "postmortem action item tracking",
       "content": "Postmortem action items must have: a single owner (not a team), a due date within 30 days, and a tracking ticket. Review incomplete action items at the start of every postmortem meeting. Teams that do not track action items to completion repeat the same incidents. 60% of incidents are caused by previously identified but unresolved issues.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "production",
       "status": "active",
       "phase_added": "define",
       "timestamp": "2025-01-01T00:00:00.000Z",
       "conflicts_with": [],
       "resolved_by": null,
-      "tags": ["team-process", "postmortem", "incident-response", "accountability"]
+      "tags": [
+        "team-process",
+        "postmortem",
+        "incident-response",
+        "accountability"
+      ]
     },
     {
       "id": "team-008",
       "type": "constraint",
       "topic": "meeting hygiene for engineers",
       "content": "Protect maker time: engineers need 4-hour uninterrupted blocks for complex work. Meeting-free mornings or meeting-free days (e.g., no meetings on Tuesday/Thursday) measurably increase output. Context-switching between meetings costs 15-25 minutes of recovery time per switch. Batch meetings into afternoon blocks.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "web",
       "status": "active",
       "phase_added": "define",
@@ -120,7 +154,11 @@
       "type": "recommendation",
       "topic": "runbook-driven operations",
       "content": "Every alert and recurring operational task should have a runbook: what the alert means, how to diagnose, step-by-step remediation, escalation criteria, and who to contact. Runbooks reduce MTTR by 40-60% for on-call engineers encountering unfamiliar alerts. Store runbooks alongside alert definitions, linked by alert name. Review and update runbooks after every incident.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "production",
       "status": "active",
       "phase_added": "define",
@@ -134,7 +172,11 @@
       "type": "risk",
       "topic": "bus factor for critical systems",
       "content": "Bus factor (number of people who could be hit by a bus before the project stalls) of 1 is a critical risk. Mitigate with: pair programming or rotation on critical systems, mandatory documentation for system architecture and runbooks, cross-training sessions quarterly, and code review requirements that expose at least 2 people to every area of the codebase.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -162,14 +204,23 @@
       "type": "recommendation",
       "topic": "retrospective action limits",
       "content": "Limit retrospective action items to 2-3 per sprint. Teams that generate 8-10 action items per retro complete fewer than 20% of them, creating learned helplessness. Pick the highest-impact items, assign owners, and carry forward only incomplete items from the previous retro. If the same item appears 3 retros in a row, escalate it.",
-      "source": { "origin": "best-practice", "artifact": null, "connector": null },
+      "source": {
+        "origin": "best-practice",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
       "timestamp": "2025-01-01T00:00:00.000Z",
       "conflicts_with": [],
       "resolved_by": null,
-      "tags": ["team-process", "retrospective", "agile", "continuous-improvement"]
+      "tags": [
+        "team-process",
+        "retrospective",
+        "agile",
+        "continuous-improvement"
+      ]
     }
   ]
 }

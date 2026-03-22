@@ -15,16 +15,20 @@ No `npm install` needed -- silo has zero dependencies.
 ## How to contribute
 
 ### Report a bug
+
 Open an issue with:
+
 - What you expected
 - What happened instead
 - Your Node version (`node --version`)
 - Steps to reproduce
 
 ### Suggest a feature
+
 Open an issue describing the use case, not just the solution. "I need X because Y" is more useful than "add X."
 
 ### Submit a PR
+
 1. Fork the repo
 2. Create a branch (`git checkout -b fix/description`)
 3. Make your changes
@@ -33,6 +37,7 @@ Open an issue describing the use case, not just the solution. "I need X because 
 6. Open a PR
 
 ### Add a knowledge pack
+
 Packs live in `packs/`. Each is a JSON file containing curated claims for a domain. To add one:
 
 1. Create `packs/your-domain.json`
@@ -80,11 +85,13 @@ Tests use Node's built-in test runner. No test framework dependencies.
 ## Commit messages
 
 Follow the existing pattern:
+
 ```
 silo: <what changed>
 ```
 
 Examples:
+
 ```
 silo: add security knowledge pack
 silo: fix search ranking for multi-word queries

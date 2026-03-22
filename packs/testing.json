@@ -8,7 +8,11 @@
       "type": "constraint",
       "topic": "test framework",
       "content": "All tests must use node:test and node:assert/strict with zero external dependencies. No Jest, Mocha, Vitest, or other frameworks.",
-      "source": { "origin": "architecture", "artifact": null, "connector": null },
+      "source": {
+        "origin": "architecture",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -22,7 +26,11 @@
       "type": "constraint",
       "topic": "test isolation",
       "content": "Tests must use real filesystem (mkdtempSync), real processes (child_process.spawn), and real HTTP. No mocks, no spies, no test doubles.",
-      "source": { "origin": "architecture", "artifact": null, "connector": null },
+      "source": {
+        "origin": "architecture",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -78,7 +86,11 @@
       "type": "constraint",
       "topic": "CI matrix",
       "content": "CI must test on Node 18, 20, and 22. Every CI run verifies zero runtime dependencies, runs all tests, checks CLI --help, and performs a dry-run npm publish.",
-      "source": { "origin": "architecture", "artifact": ".github/workflows/ci.yml", "connector": null },
+      "source": {
+        "origin": "architecture",
+        "artifact": ".github/workflows/ci.yml",
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -92,7 +104,11 @@
       "type": "factual",
       "topic": "test coverage baseline",
       "content": "Baseline: 191 tests across 5 repos (wheat 25, barn 58, mill 30, silo 21, ranch 44). After adding server, UI smoke, and cross-tool tests: ~260 tests total.",
-      "source": { "origin": "measurement", "artifact": null, "connector": null },
+      "source": {
+        "origin": "measurement",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "tested",
       "status": "active",
       "phase_added": "research",
