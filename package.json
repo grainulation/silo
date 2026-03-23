@@ -1,6 +1,6 @@
 {
   "name": "@grainulation/silo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reusable knowledge for research sprints -- shared claim libraries, templates, and knowledge packs",
   "main": "lib/index.js",
   "exports": {
@@ -27,7 +27,7 @@
   ],
   "author": "grainulation contributors",
   "license": "MIT",
-	"type": "module",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/grainulation/silo.git"
