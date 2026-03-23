@@ -27,6 +27,7 @@
   ],
   "author": "grainulation contributors",
   "license": "MIT",
+	"type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/grainulation/silo.git"
