@@ -70,7 +70,7 @@ The key architectural principle: **silo is a content-addressable claim store.** 
 
 - Zero dependencies. If you need something, write it or use Node built-ins.
 - No transpilation. Ship what you write.
-- ESM imports (`import`/`export`). Node 18+ required.
+- ESM imports (`import`/`export`). Node 20+ required.
 - Keep functions small. If a function needs a scroll, split it.
 - No emojis in code, CLI output, or pack data.
 
