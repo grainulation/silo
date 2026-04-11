@@ -423,7 +423,6 @@ try {
       const serverPath = path.join(__dirname, "..", "lib", "server.js");
       const child = fork(serverPath, serverArgs, {
         stdio: "inherit",
-        env: process.env,
       });
       child.on("error", (err) => {
         process.stderr.write(`silo: error starting server: ${err.message}\n`);
