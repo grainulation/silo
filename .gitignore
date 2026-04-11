@@ -3,9 +3,15 @@ node_modules/
 *.log
 coverage/
 
-# Farmer runtime tokens
+# Farmer runtime files
 .farmer-token
+.farmer-state.json
+.farmer.pid
+.farmer-audit*.jsonl
 .farmer-config.json
+
+# Claude Code
+.claude/
 
 # Grainulator runtime files
 .wheat-tips.md
