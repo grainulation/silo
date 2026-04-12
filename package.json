@@ -42,7 +42,7 @@
     "bin/",
     "lib/",
     "packs/",
-    "public/",
+    "public/grainulation-tokens.css",
     "CHANGELOG.md",
     "LICENSE",
     "CODE_OF_CONDUCT.md",
