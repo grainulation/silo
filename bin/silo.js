@@ -95,12 +95,18 @@ Commands:
   analyze                            Run cross-library analytics (requires harvest)
   serve [--port 9095]               Start the knowledge browser UI
   serve-mcp                         Start the MCP server on stdio
+  fetch <url> [--mode auto|concise|full|meta-only] [--no-cache] [--privacy]
+                                    Size-efficient fetch with semantic extraction
+  cache <stats|clear|purge <domain>>
+                                    Manage the smart-fetch cache
 
 Examples:
   silo pull compliance --into ./claims.json
   silo search "encryption" --type constraint
   silo store "my-findings" --from ./claims.json
   silo serve --port 9095
+  silo fetch https://example.com/article --mode concise
+  silo cache stats
   silo packs`);
 }
 
@@ -404,6 +410,93 @@ try {
     case "serve-mcp": {
       const serveMcp = require("../lib/serve-mcp.js");
       serveMcp.run(process.cwd());
+      break;
+    }
+
+    case "fetch": {
+      const url = process.argv[3];
+      if (!url || !/^https?:\/\//i.test(url)) {
+        print(`silo: fetch requires an absolute http(s) URL\n`);
+        print(`Usage: silo fetch <url> [--mode auto|concise|full|meta-only] [--no-cache] [--privacy]`);
+        process.exit(1);
+      }
+      const mode = flag("mode") || "auto";
+      const noCache = process.argv.includes("--no-cache");
+      const privacy = process.argv.includes("--privacy");
+      const { smartFetch } = require("../lib/smart-fetch.js");
+      smartFetch(url, {
+        mode,
+        cache: !noCache,
+        privacy,
+      })
+        .then((r) => {
+          if (flag("json") || process.argv.includes("--json")) {
+            print(r);
+            return;
+          }
+          process.stdout.write(
+            `URL:        ${r.url}\n` +
+              `Status:     ${r.ok ? "OK" : "FAILED"} (HTTP ${r.status || "?"})\n` +
+              `Quality:    ${r.quality}\n` +
+              `Mode used:  ${r.mode_used || mode}\n` +
+              `Title:      ${r.title || ""}\n` +
+              `Description:${r.description ? " " + r.description.slice(0, 200) : ""}\n` +
+              `Size:       ${r.size?.full || 0} → ${r.size?.extracted || 0} (${r.reduction_pct || 0}% reduction)\n` +
+              `Cached:     ${r.cached ? "yes (hit)" : "no"}\n` +
+              `Elapsed:    ${r.elapsed_ms}ms\n` +
+              (r.warnings?.length ? `Warnings:   ${r.warnings.join(", ")}\n` : "") +
+              `\n--- Content ---\n${r.content || "(empty)"}\n`,
+          );
+          process.exit(r.ok ? 0 : 1);
+        })
+        .catch((err) => {
+          process.stderr.write(`silo: fetch error: ${err.message}\n`);
+          process.exit(1);
+        });
+      break;
+    }
+
+    case "cache": {
+      const subcommand = process.argv[3];
+      const { FetchCache } = require("../lib/fetch-cache.js");
+      const cache = new FetchCache();
+      switch (subcommand) {
+        case "stats": {
+          const stats = cache.stats();
+          const mb = (n) => (n / (1024 * 1024)).toFixed(2);
+          const days = stats.oldest_ms
+            ? ((Date.now() - stats.oldest_ms) / (1000 * 60 * 60 * 24)).toFixed(1)
+            : null;
+          process.stdout.write(
+            `silo smart-fetch cache:\n` +
+              `  entries:   ${stats.entries} / ${stats.max_entries}\n` +
+              `  size:      ${mb(stats.total_bytes)} MB / ${mb(stats.max_bytes)} MB\n` +
+              `  ttl:       ${stats.ttl_ms / (1000 * 60 * 60 * 24)} days\n` +
+              (days !== null ? `  oldest:    ${days} days old\n` : "") +
+              `  directory: ${cache.dir}\n`,
+          );
+          break;
+        }
+        case "clear": {
+          const removed = cache.clear();
+          process.stdout.write(`silo: cleared ${removed} cache file(s)\n`);
+          break;
+        }
+        case "purge": {
+          const domain = process.argv[4];
+          if (!domain) {
+            print(`silo: cache purge requires a domain\n`);
+            print(`Usage: silo cache purge <domain>`);
+            process.exit(1);
+          }
+          const removed = cache.purgeDomain(domain);
+          process.stdout.write(`silo: purged ${removed} entries matching ${domain}\n`);
+          break;
+        }
+        default:
+          print(`silo: cache subcommand required: stats, clear, or purge <domain>`);
+          process.exit(1);
+      }
       break;
     }
 
