@@ -53,7 +53,9 @@
 			"mode": "auto",
 			"expect": {
 				"quality": "failed",
-				"notes": "Link lists have no narrative — failed is correct"
+				"max_content_chars": 200,
+				"title_present": true,
+				"notes": "Link lists have no narrative — we want 'failed' because extraction yielded nothing, not because of a network error. max_content_chars asserts extraction actually ran."
 			}
 		}
 	]

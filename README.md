@@ -72,6 +72,15 @@ silo list
 | `silo packs`                              | List available knowledge packs  |
 | `silo publish <name> --collections <ids>` | Bundle collections into a pack  |
 | `silo install <file>`                     | Install a pack from a JSON file |
+| `silo fetch <url> [--mode auto|concise|full|meta-only]` | Size-efficient web fetch with semantic extraction |
+| `silo cache stats|clear|purge <domain>`   | Manage the smart-fetch cache    |
+
+## Testing
+
+```bash
+npm test             # unit + extraction tests (no network)
+npm run test:live    # includes live regression fixtures (FETCH_LIVE=1)
+```
 
 ## How it works
 

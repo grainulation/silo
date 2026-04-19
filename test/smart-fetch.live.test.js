@@ -60,6 +60,13 @@ describe("smart-fetch: live regression fixtures", () => {
 				);
 			}
 
+			if (exp.max_content_chars != null) {
+				assert.ok(
+					(result.content || "").length <= exp.max_content_chars,
+					`content too long for ${fixture.id}: got ${result.content?.length || 0}, expected ≤ ${exp.max_content_chars}`,
+				);
+			}
+
 			if (exp.must_contain_any && exp.must_contain_any.length > 0) {
 				const lower = (result.content || "").toLowerCase();
 				const matched = exp.must_contain_any.filter((k) =>
