@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.3 — 2026-04-19
+
+### Added
+
+- MCP crash safety via `@grainulation/barn/mcp-crash` — `uncaughtException` and `unhandledRejection` on the stdio server path now emit structured JSON to stderr and exit(1) so Claude Code sees a clean EOF and can reload the transport.
+
+### Changed
+
+- Bumped `@grainulation/barn` to `^1.2.2`.
+
 ## 1.2.2 — 2026-04-19
 
 ### Security

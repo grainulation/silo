@@ -1,6 +1,6 @@
 {
   "name": "@grainulation/silo",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Reusable knowledge for research sprints -- shared claim libraries, templates, and knowledge packs",
   "type": "module",
   "main": "lib/index.js",
@@ -21,7 +21,7 @@
     "format:check": "npx prettier@3.3 --check ."
   },
   "dependencies": {
-    "@grainulation/barn": "^1.2.0"
+    "@grainulation/barn": "^1.2.2"
   },
   "keywords": [
     "research",
