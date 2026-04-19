@@ -16,24 +16,31 @@
  *   silo serve-mcp                     Start the MCP server on stdio
  */
 
-const { Store } = require("../lib/store.js");
-const { Search } = require("../lib/search.js");
-const { ImportExport } = require("../lib/import-export.js");
-const { Templates } = require("../lib/templates.js");
-const { Packs } = require("../lib/packs.js");
-const { Graph } = require("../lib/graph.js");
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { Store } from "../lib/store.js";
+import { Search } from "../lib/search.js";
+import { ImportExport } from "../lib/import-export.js";
+import { Templates } from "../lib/templates.js";
+import { Packs } from "../lib/packs.js";
+import { Graph } from "../lib/graph.js";
+import { setVerbose, vlog as barnVlog } from "@grainulation/barn/cli";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ── --version / -v (before verbose check) ──
 if (
   process.argv.includes("--version") ||
   (process.argv.includes("-v") && process.argv.length === 3)
 ) {
-  const pkg = require("../package.json");
+  const pkg = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf-8"),
+  );
   process.stdout.write(pkg.version + "\n");
   process.exit(0);
 }
-
-const { setVerbose, vlog: barnVlog } = require("@grainulation/barn/cli");
 
 const verbose =
   process.argv.includes("--verbose") || process.argv.includes("-v");
@@ -273,8 +280,8 @@ try {
     }
 
     case "analyze": {
-      const { analyzeLibrary } = require("../lib/analytics.js");
-      const result = analyzeLibrary(store);
+      const { analyzeLibrary } = await import("../lib/analytics.js");
+      const result = await analyzeLibrary(store);
       if (jsonMode) {
         print(JSON.stringify(result));
         break;
@@ -407,7 +414,7 @@ try {
     }
 
     case "serve-mcp": {
-      const serveMcp = require("../lib/serve-mcp.js");
+      const serveMcp = await import("../lib/serve-mcp.js");
       serveMcp.run(process.cwd());
       break;
     }
@@ -424,7 +431,7 @@ try {
       const mode = flag("mode") || "auto";
       const noCache = process.argv.includes("--no-cache");
       const privacy = process.argv.includes("--privacy");
-      const { smartFetch } = require("../lib/smart-fetch.js");
+      const { smartFetch } = await import("../lib/smart-fetch.js");
       smartFetch(url, {
         mode,
         cache: !noCache,
@@ -461,7 +468,7 @@ try {
 
     case "cache": {
       const subcommand = process.argv[3];
-      const { FetchCache } = require("../lib/fetch-cache.js");
+      const { FetchCache } = await import("../lib/fetch-cache.js");
       const cache = new FetchCache();
       switch (subcommand) {
         case "stats": {
@@ -510,7 +517,7 @@ try {
     }
 
     case "serve": {
-      // Dynamic ESM import so the CJS bin can load the ESM server module
+      // Dynamic ESM import so the bin can load the server module lazily
       // and call start() in-process (no child fork). The server's start()
       // factory contains all the side-effecty code — this file picks up
       // SIGTERM/SIGINT handlers itself, so we don't need to bridge them.

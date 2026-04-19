@@ -5,12 +5,16 @@
  * Runs with plain Node.js (node:test + node:assert). Zero dependencies.
  */
 
-const { describe, it, before, after } = require("node:test");
-const assert = require("node:assert/strict");
-const { spawn } = require("node:child_process");
-const http = require("node:http");
-const path = require("node:path");
-const net = require("node:net");
+import { describe, it, before, after } from "node:test";
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import http from "node:http";
+import path from "node:path";
+import net from "node:net";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const SERVER_PATH = path.join(__dirname, "..", "lib", "server.js");
 

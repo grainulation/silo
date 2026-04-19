@@ -5,14 +5,14 @@
  * Network-backed integration tests live in a separate harness.
  */
 
-const { describe, it } = require("node:test");
-const assert = require("node:assert/strict");
-const {
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import {
   _extractMeta,
   _extractBody,
   _assessQuality,
   _decodeEntities,
-} = require("../lib/smart-fetch.js");
+} from "../lib/smart-fetch.js";
 
 describe("smart-fetch: decodeEntities", () => {
   it("decodes common HTML entities", () => {

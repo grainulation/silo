@@ -14,14 +14,16 @@
  * Modeled on wheat/test/mcp.test.js. Zero dependencies.
  */
 
-"use strict";
+import { describe, it, before, after } from "node:test";
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const { describe, it, before, after } = require("node:test");
-const assert = require("node:assert/strict");
-const { spawn } = require("node:child_process");
-const fs = require("node:fs");
-const os = require("node:os");
-const path = require("node:path");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const SILO_BIN = path.resolve(__dirname, "..", "bin", "silo.js");
 
@@ -209,7 +211,10 @@ describe("silo MCP server — protocol basics", () => {
   });
 
   it("responds to initialize with serverInfo", async () => {
-    const { response, child } = await spawnAndInitialize(ws.workspace, ws.fakeHome);
+    const { response, child } = await spawnAndInitialize(
+      ws.workspace,
+      ws.fakeHome,
+    );
     try {
       assert.equal(response.jsonrpc, "2.0");
       assert.equal(response.id, 1);
@@ -270,7 +275,11 @@ describe("silo MCP server — protocol basics", () => {
           jsonrpc: "2.0",
           id: 1,
           method: "initialize",
-          params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "t", version: "0" } },
+          params: {
+            protocolVersion: "2024-11-05",
+            capabilities: {},
+            clientInfo: { name: "t", version: "0" },
+          },
         });
       });
       const trimmed = stdout.trimStart();
@@ -343,7 +352,12 @@ describe("silo MCP tool handlers", () => {
   it("silo/search — errors when query missing", async () => {
     const { child } = await spawnAndInitialize(ws.workspace, ws.fakeHome);
     try {
-      const { response, payload } = await callTool(child, 31, "silo/search", {});
+      const { response, payload } = await callTool(
+        child,
+        31,
+        "silo/search",
+        {},
+      );
       assert.equal(payload.status, "error");
       assert.ok(/query/i.test(payload.message));
       assert.ok(response.result.isError);

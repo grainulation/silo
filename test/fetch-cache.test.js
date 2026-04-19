@@ -4,13 +4,13 @@
  * All tests use a scratch directory under /tmp, never touch real ~/.silo.
  */
 
-const { describe, it, before, after, beforeEach } = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
-const os = require("node:os");
+import { describe, it, before, after, beforeEach } from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import os from "node:os";
 
-const { FetchCache } = require("../lib/fetch-cache.js");
+import { FetchCache } from "../lib/fetch-cache.js";
 
 const TEST_DIR = path.join(os.tmpdir(), `silo-cache-test-${Date.now()}`);
 

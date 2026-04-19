@@ -8,12 +8,16 @@
  *   FETCH_LIVE=1 node --test test/smart-fetch.live.test.js
  */
 
-const { describe, it } = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const { smartFetch } = require("../lib/smart-fetch.js");
+import { smartFetch } from "../lib/smart-fetch.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const LIVE = process.env.FETCH_LIVE === "1";
 const fixturePath = path.join(__dirname, "smart-fetch-fixtures.json");

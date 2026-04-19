@@ -5,20 +5,24 @@
  * Zero test framework dependencies.
  */
 
-const { describe, it, before, after } = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
-const os = require("node:os");
-const { execFileSync } = require("node:child_process");
+import { describe, it, before, after } from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import os from "node:os";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
-const { Store } = require("../lib/store.js");
-const { Search } = require("../lib/search.js");
-const { ImportExport } = require("../lib/import-export.js");
-const { Templates } = require("../lib/templates.js");
-const { Packs } = require("../lib/packs.js");
-const { Graph } = require("../lib/graph.js");
-const { Confluence } = require("../lib/confluence.js");
+import { Store } from "../lib/store.js";
+import { Search } from "../lib/search.js";
+import { ImportExport } from "../lib/import-export.js";
+import { Templates } from "../lib/templates.js";
+import { Packs } from "../lib/packs.js";
+import { Graph } from "../lib/graph.js";
+import { Confluence } from "../lib/confluence.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const TEST_DIR = path.join(os.tmpdir(), `silo-test-${Date.now()}`);
 
