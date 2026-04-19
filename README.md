@@ -23,7 +23,8 @@ npm install -g @grainulation/silo
 
 ## Built-in packs
 
-11 knowledge packs with 131 curated claims:
+24 knowledge packs with 268 curated claims. Run `silo packs` for the
+current list with descriptions. The core domain packs:
 
 | Pack               | Claims | What's inside                                                              |
 | ------------------ | ------ | -------------------------------------------------------------------------- |
@@ -38,6 +39,10 @@ npm install -g @grainulation/silo
 | `security`         | 12     | Security constraints, threat models, authentication patterns               |
 | `team-process`     | 12     | Team workflow, code review, incident response patterns                     |
 | `testing`          | 10     | Testing strategies, coverage, test architecture                            |
+
+Also includes: `adr`, `architecture-decision`, `coverage-ramp`,
+`incident-postmortem`, `qa-simulation`, `vendor-eval`, 5 hackathon
+packs. The full list is `silo packs`.
 
 ## Quick start
 
@@ -117,7 +122,7 @@ Depends only on `@grainulation/barn` (internal ecosystem utilities); no third-pa
 | [wheat](https://github.com/grainulation/wheat)               | Research engine -- grow structured evidence                 |
 | [farmer](https://github.com/grainulation/farmer)             | Permission dashboard -- approve AI actions in real time     |
 | [barn](https://github.com/grainulation/barn)                 | Shared tools -- templates, validators, sprint detection     |
-| [mill](https://github.com/grainulation/mill)                 | Format conversion -- export to PDF, CSV, slides, 24 formats |
+| [mill](https://github.com/grainulation/mill)                 | Format conversion -- export to PDF, CSV, slides, 26 formats |
 | **silo**                                                     | Knowledge storage -- reusable claim libraries and packs     |
 | [harvest](https://github.com/grainulation/harvest)           | Analytics -- cross-sprint patterns and prediction scoring   |
 | [orchard](https://github.com/grainulation/orchard)           | Orchestration -- multi-sprint coordination and dependencies |

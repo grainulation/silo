@@ -47,11 +47,12 @@
     "bin/",
     "lib/",
     "packs/",
-    "public/grainulation-tokens.css",
+    "public/",
     "CHANGELOG.md",
     "LICENSE",
     "CODE_OF_CONDUCT.md",
-    "CONTRIBUTING.md"
+    "CONTRIBUTING.md",
+    "SECURITY.md"
   ],
   "publishConfig": {
     "access": "public"
