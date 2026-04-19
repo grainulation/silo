@@ -106,9 +106,9 @@ io.pull("compliance", "./claims.json");
 io.push("./claims.json", "my-sprint-findings");
 ```
 
-## Zero dependencies
+## Zero third-party dependencies
 
-Node built-in modules only. Filesystem-based storage. Works offline.
+Depends only on `@grainulation/barn` (internal ecosystem utilities); no third-party runtime deps. Node built-ins otherwise. Filesystem-based storage. Works offline.
 
 ## Part of the grainulation ecosystem
 
