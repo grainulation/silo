@@ -8,7 +8,11 @@
       "type": "constraint",
       "topic": "ci-status",
       "content": "All CI checks must be passing. FAIL if any required check is failed or pending.",
-      "source": { "origin": "architecture", "artifact": null, "connector": null },
+      "source": {
+        "origin": "architecture",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -22,7 +26,11 @@
       "type": "constraint",
       "topic": "acceptance-criteria",
       "content": "Every acceptance criterion in the linked Jira ticket must be verified against the PR diff and repo state. FAIL if any AC item cannot be verified.",
-      "source": { "origin": "architecture", "artifact": null, "connector": null },
+      "source": {
+        "origin": "architecture",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -36,7 +44,11 @@
       "type": "constraint",
       "topic": "diff-audit",
       "content": "Every changed file must be classified as test, config, docs, or production. All changes must be accounted for. FAIL if unexpected production changes exist in a test-only PR.",
-      "source": { "origin": "architecture", "artifact": null, "connector": null },
+      "source": {
+        "origin": "architecture",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -50,7 +62,11 @@
       "type": "constraint",
       "topic": "build-verification",
       "content": "The project must build successfully. Build command auto-detected from package.json: prefer 'build', fall back to 'dist', 'compile', 'tsc'. FAIL if build fails.",
-      "source": { "origin": "architecture", "artifact": null, "connector": null },
+      "source": {
+        "origin": "architecture",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -64,7 +80,11 @@
       "type": "constraint",
       "topic": "test-suite",
       "content": "Full test suite must pass. Test command auto-detected from package.json: prefer 'test:cov:full', 'test:coverage', 'test:ci', fall back to 'test'. FAIL if any test fails.",
-      "source": { "origin": "architecture", "artifact": null, "connector": null },
+      "source": {
+        "origin": "architecture",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",
@@ -134,7 +154,11 @@
       "type": "recommendation",
       "topic": "dependencies",
       "content": "Check for new or changed dependencies in package.json and lockfiles. PASS if no changes or changes are expected.",
-      "source": { "origin": "architecture", "artifact": null, "connector": null },
+      "source": {
+        "origin": "architecture",
+        "artifact": null,
+        "connector": null
+      },
       "evidence": "documented",
       "status": "active",
       "phase_added": "define",

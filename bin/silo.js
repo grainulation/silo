@@ -416,7 +416,9 @@ try {
       const url = process.argv[3];
       if (!url || !/^https?:\/\//i.test(url)) {
         print(`silo: fetch requires an absolute http(s) URL\n`);
-        print(`Usage: silo fetch <url> [--mode auto|concise|full|meta-only] [--no-cache] [--privacy]`);
+        print(
+          `Usage: silo fetch <url> [--mode auto|concise|full|meta-only] [--no-cache] [--privacy]`,
+        );
         process.exit(1);
       }
       const mode = flag("mode") || "auto";
@@ -443,7 +445,9 @@ try {
               `Size:       ${r.size?.full || 0} → ${r.size?.extracted || 0} (${r.reduction_pct || 0}% reduction)\n` +
               `Cached:     ${r.cached ? "yes (hit)" : "no"}\n` +
               `Elapsed:    ${r.elapsed_ms}ms\n` +
-              (r.warnings?.length ? `Warnings:   ${r.warnings.join(", ")}\n` : "") +
+              (r.warnings?.length
+                ? `Warnings:   ${r.warnings.join(", ")}\n`
+                : "") +
               `\n--- Content ---\n${r.content || "(empty)"}\n`,
           );
           process.exit(r.ok ? 0 : 1);
@@ -464,7 +468,9 @@ try {
           const stats = cache.stats();
           const mb = (n) => (n / (1024 * 1024)).toFixed(2);
           const days = stats.oldest_ms
-            ? ((Date.now() - stats.oldest_ms) / (1000 * 60 * 60 * 24)).toFixed(1)
+            ? ((Date.now() - stats.oldest_ms) / (1000 * 60 * 60 * 24)).toFixed(
+                1,
+              )
             : null;
           process.stdout.write(
             `silo smart-fetch cache:\n` +
@@ -489,11 +495,15 @@ try {
             process.exit(1);
           }
           const removed = cache.purgeDomain(domain);
-          process.stdout.write(`silo: purged ${removed} entries matching ${domain}\n`);
+          process.stdout.write(
+            `silo: purged ${removed} entries matching ${domain}\n`,
+          );
           break;
         }
         default:
-          print(`silo: cache subcommand required: stats, clear, or purge <domain>`);
+          print(
+            `silo: cache subcommand required: stats, clear, or purge <domain>`,
+          );
           process.exit(1);
       }
       break;
@@ -512,9 +522,7 @@ try {
           start({ port, root, corsOrigin, verbose });
         })
         .catch((err) => {
-          process.stderr.write(
-            `silo: error starting server: ${err.message}\n`,
-          );
+          process.stderr.write(`silo: error starting server: ${err.message}\n`);
           process.exit(1);
         });
       break;
