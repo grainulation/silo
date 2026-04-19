@@ -500,29 +500,23 @@ try {
     }
 
     case "serve": {
-      // Dynamic import for ESM server module -- use fork() for proper stdio
-      const port = flag("port") || "9095";
+      // Dynamic ESM import so the CJS bin can load the ESM server module
+      // and call start() in-process (no child fork). The server's start()
+      // factory contains all the side-effecty code — this file picks up
+      // SIGTERM/SIGINT handlers itself, so we don't need to bridge them.
+      const port = parseInt(flag("port") || "9095", 10);
       const root = flag("root") || process.cwd();
-      const serverArgs = [];
-      if (flag("port")) {
-        serverArgs.push("--port", port);
-      }
-      if (flag("root")) {
-        serverArgs.push("--root", root);
-      }
-      const { fork } = require("node:child_process");
-      const path = require("node:path");
-      const serverPath = path.join(__dirname, "..", "lib", "server.js");
-      const child = fork(serverPath, serverArgs, {
-        stdio: "inherit",
-      });
-      child.on("error", (err) => {
-        process.stderr.write(`silo: error starting server: ${err.message}\n`);
-        process.exit(1);
-      });
-      child.on("exit", (code) => process.exit(code || 0));
-      process.on("SIGTERM", () => child.kill("SIGTERM"));
-      process.on("SIGINT", () => child.kill("SIGINT"));
+      const corsOrigin = flag("cors") || null;
+      import("../lib/server.js")
+        .then(({ start }) => {
+          start({ port, root, corsOrigin, verbose });
+        })
+        .catch((err) => {
+          process.stderr.write(
+            `silo: error starting server: ${err.message}\n`,
+          );
+          process.exit(1);
+        });
       break;
     }
 
