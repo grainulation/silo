@@ -1,6 +1,6 @@
 {
   "name": "@grainulation/silo",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Reusable knowledge for research sprints -- shared claim libraries, templates, and knowledge packs",
   "type": "module",
   "main": "lib/index.js",

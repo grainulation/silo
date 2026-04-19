@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.2.2 — 2026-04-19
+
+### Security
+
+- **Rx-12: CQL injection in Confluence adapter.** `listPages()` and `_findPageByTitle()` interpolated user-supplied `spaceKey`/`title` directly into CQL, relying on `encodeURIComponent` for safety. `encodeURIComponent` only URL-encodes — a value containing `"` or `\` could break out of the CQL literal and append an arbitrary clause. Added `_cqlEscape()` that escapes backslash then double-quote so user-controlled values stay inside the string literal.
+
+### Internal
+
+- CI: install dependencies before running tests
+- CI: allow `@grainulation/*` in the zero-dependency gate
+- Prettier pass + MCP test harness chunk-safety fix
+
+## 1.2.1 — 2026-04-19
+
+(Release cut during production-polish sprint; see git log for detail — SBOM + OIDC provenance added; security-remediation sprint prescriptions shipped.)
+
 ## 1.2.0 — 2026-04-18
 
 ### Added
