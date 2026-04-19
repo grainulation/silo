@@ -111,15 +111,24 @@ function waitForResponse(child, timeout = 10_000) {
 
     function onData(chunk) {
       buf += chunk.toString();
-      const lines = buf.split("\n").filter((l) => l.trim());
-      if (lines.length > 0) {
-        clearTimeout(timer);
-        child.stdout.removeListener("data", onData);
-        try {
-          resolve(JSON.parse(lines[0]));
-        } catch (err) {
-          reject(new Error(`Parse error: ${err.message}\nRaw: ${buf}`));
-        }
+      // Only resolve when we have a COMPLETE newline-terminated line.
+      // Large responses (e.g. silo/packs with many packs) span multiple
+      // stdout chunks; early resolution on a partial buffer yields a
+      // truncated string that JSON.parse rejects.
+      const newlineIdx = buf.indexOf("\n");
+      if (newlineIdx === -1) return;
+      const line = buf.slice(0, newlineIdx).trim();
+      if (!line) {
+        // Strip leading blank line(s) and keep accumulating.
+        buf = buf.slice(newlineIdx + 1);
+        return;
+      }
+      clearTimeout(timer);
+      child.stdout.removeListener("data", onData);
+      try {
+        resolve(JSON.parse(line));
+      } catch (err) {
+        reject(new Error(`Parse error: ${err.message}\nRaw: ${line}`));
       }
     }
 
