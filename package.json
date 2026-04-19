@@ -19,6 +19,9 @@
     "start": "node bin/silo.js serve",
     "serve": "node bin/silo.js serve"
   },
+  "dependencies": {
+    "@grainulation/barn": "^1.2.0"
+  },
   "keywords": [
     "research",
     "claims",

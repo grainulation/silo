@@ -33,13 +33,12 @@ if (
   process.exit(0);
 }
 
+const { setVerbose, vlog: barnVlog } = require("@grainulation/barn/cli");
+
 const verbose =
   process.argv.includes("--verbose") || process.argv.includes("-v");
-function vlog(...a) {
-  if (!verbose) return;
-  const ts = new Date().toISOString();
-  process.stderr.write(`[${ts}] silo: ${a.join(" ")}\n`);
-}
+setVerbose(verbose);
+const vlog = (...a) => barnVlog("silo:", ...a);
 
 const store = new Store();
 const search = new Search(store);
